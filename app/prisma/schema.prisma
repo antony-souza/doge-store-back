@@ -6,3 +6,32 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model Store {
+  id        String         @id @default(cuid())
+  name      String
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+  Product   ProductStore[]
+}
+
+model Product {
+  id          String         @id @default(cuid())
+  name        String
+  description String?
+  price       Float
+  Store       ProductStore[]
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+}
+
+model ProductStore {
+  id        String   @id @default(cuid())
+  productId String
+  storeId   String
+  price     Float
+  Product   Product  @relation(fields: [productId], references: [id])
+  Store     Store    @relation(fields: [storeId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
