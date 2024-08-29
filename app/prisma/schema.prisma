@@ -11,9 +11,10 @@ datasource db {
 model Store {
   id        String         @id @default(cuid())
   name      String
-  createdAt DateTime       @default(now())
-  updatedAt DateTime       @updatedAt
+  createdAt DateTime?      @default(now())
+  updatedAt DateTime?      @updatedAt
   Product   ProductStore[]
+  StoreInfo StoreInfo[]
 }
 
 model Product {
@@ -24,6 +25,20 @@ model Product {
   Store       ProductStore[]
   createdAt   DateTime       @default(now())
   updatedAt   DateTime       @updatedAt
+}
+
+model StoreInfo {
+  id              String   @id @default(cuid())
+  image           String
+  store           Store    @relation(fields: [storeId], references: [id])
+  storeId         String
+  name            String
+  description     String
+  isOpen          Boolean  @default(true)
+  location        String
+  backgroundColor String
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 }
 
 model ProductStore {
