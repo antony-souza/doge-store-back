@@ -1,22 +1,33 @@
-// app/src/store/storeDTO/store-info.dto.ts
-import { IsBoolean, IsString, IsUUID } from 'class-validator';
+import { IsBoolean, IsNotEmpty, IsString } from 'class-validator';
 
-export class StoreInfoDto {
+export class CreateStoreDto {
+  @IsNotEmpty()
+  @IsString()
+  name: string;
+}
+
+export class CreateStoreInfoDto {
+  @IsNotEmpty()
   @IsString()
   image: string;
 
-  @IsUUID()
-  storeId: string;
+  @IsNotEmpty()
+  @IsString()
+  name: string;
 
+  @IsNotEmpty()
   @IsString()
   description: string;
 
+  @IsNotEmpty()
   @IsBoolean()
   isOpen: boolean;
 
+  @IsNotEmpty()
   @IsString()
   location: string;
 
+  @IsNotEmpty()
   @IsString()
   backgroundColor: string;
 }

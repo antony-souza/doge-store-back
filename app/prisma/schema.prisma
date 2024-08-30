@@ -1,6 +1,5 @@
 generator client {
-  provider        = "prisma-client-js"
-  previewFeatures = ["tracing"]
+  provider = "prisma-client-js"
 }
 
 datasource db {
@@ -9,45 +8,33 @@ datasource db {
 }
 
 model Store {
-  id        String         @id @default(cuid())
-  name      String
-  createdAt DateTime?      @default(now())
-  updatedAt DateTime?      @updatedAt
-  Product   ProductStore[]
-  StoreInfo StoreInfo[]
-}
-
-model Product {
-  id          String         @id @default(cuid())
+  id          String     @id @default(cuid())
   name        String
-  description String?
-  price       Float
-  Store       ProductStore[]
-  createdAt   DateTime       @default(now())
-  updatedAt   DateTime       @updatedAt
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  storeInfo   StoreInfo? @relation(fields: [storeInfoId], references: [id])
+  storeInfoId String?    @unique
 }
 
 model StoreInfo {
-  id              String   @id @default(cuid())
+  id              String    @id @default(cuid())
   image           String
-  store           Store    @relation(fields: [storeId], references: [id])
-  storeId         String
+  store           Store?    @relation
+  storeId         String?   @unique
   name            String
   description     String
-  isOpen          Boolean  @default(true)
+  isOpen          Boolean   @default(true)
   location        String
   backgroundColor String
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  createdAt       DateTime? @default(now())
+  updatedAt       DateTime? @updatedAt
 }
 
-model ProductStore {
-  id        String   @id @default(cuid())
-  productId String
-  storeId   String
-  price     Float
-  Product   Product  @relation(fields: [productId], references: [id])
-  Store     Store    @relation(fields: [storeId], references: [id])
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+model Product {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  price       Float
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
