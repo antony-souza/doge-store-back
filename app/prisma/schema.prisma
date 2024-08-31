@@ -8,26 +8,40 @@ datasource db {
 }
 
 model Store {
-  id          String     @id @default(cuid())
+  id          String      @id @default(cuid())
   name        String
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
-  storeInfo   StoreInfo? @relation(fields: [storeInfoId], references: [id])
-  storeInfoId String?    @unique
+  createdAt DateTime? @default(now()) @map(name: "created_at")
+  updatedAt DateTime? @default(now()) @map(name: "updated_at")
+
+  storeConfig StoreAndStoreConfig[]
+
+  @@map("stores")
 }
 
-model StoreInfo {
-  id              String    @id @default(cuid())
+model StoreConfig {
+  id              String   @id @default(cuid())
   image           String
-  store           Store?    @relation
-  storeId         String?   @unique
-  name            String
   description     String
-  isOpen          Boolean   @default(true)
+  isOpen          Boolean  @default(true)
   location        String
   backgroundColor String
-  createdAt       DateTime? @default(now())
-  updatedAt       DateTime? @updatedAt
+  createdAt DateTime? @default(now()) @map(name: "created_at")
+  updatedAt DateTime? @default(now()) @map(name: "updated_at")
+
+  store          StoreAndStoreConfig[]
+  @@map("store_configs")
+}
+
+model StoreAndStoreConfig {
+  id                 String      @id @default(cuid())
+  storeId            String      @unique
+  store              Store       @relation(fields: [storeId], references: [id])
+  storeConfigId      String      @unique
+  storeConfig        StoreConfig @relation(fields: [storeConfigId], references: [id])
+  createdAt          DateTime?   @default(now()) @map(name: "created_at")
+  updatedAt          DateTime?   @default(now()) @map(name: "updated_at")
+
+  @@map("store_and_store_configs") 
 }
 
 model Product {
@@ -35,6 +49,8 @@ model Product {
   name        String
   description String?
   price       Float
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt   DateTime? @default(now()) @map(name: "created_at")
+  updatedAt   DateTime? @default(now()) @map(name: "updated_at")
+
+  @@map("products")
 }
