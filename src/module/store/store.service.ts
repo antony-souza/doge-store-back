@@ -27,7 +27,6 @@ export class StoreService {
         },
       });
 
-      // Cria a associação StoreAndStoreConfig
       const storeAndStoreConfig = await prisma.storeAndStoreConfig.create({
         data: {
           storeId: store.id,
