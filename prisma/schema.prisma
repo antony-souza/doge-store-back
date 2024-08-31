@@ -8,12 +8,15 @@ datasource db {
 }
 
 model Store {
-  id          String      @id @default(cuid())
-  name        String
-  createdAt DateTime? @default(now()) @map(name: "created_at")
-  updatedAt DateTime? @default(now()) @map(name: "updated_at")
+  id        String     @id @default(cuid())
+  name      String
+  createdAt DateTime   @default(now()) @map(name: "created_at")
+  updatedAt DateTime   @default(now()) @map(name: "updated_at")
+  category  Category[]
 
-  storeConfig StoreAndStoreConfig[]
+  storeConfig              StoreAndStoreConfig[]
+  Product                  Product[]
+  ProductAndAddtionalDishe ProductAndAddtionalDishe[]
 
   @@map("stores")
 }
@@ -25,32 +28,82 @@ model StoreConfig {
   isOpen          Boolean  @default(true)
   location        String
   backgroundColor String
-  createdAt       DateTime? @default(now()) @map(name: "created_at")
-  updatedAt       DateTime? @default(now()) @map(name: "updated_at")
+  createdAt       DateTime @default(now()) @map(name: "created_at")
+  updatedAt       DateTime @default(now()) @map(name: "updated_at")
 
-  store          StoreAndStoreConfig[]
+  store StoreAndStoreConfig[]
+
   @@map("store_configs")
 }
 
 model StoreAndStoreConfig {
-  id                 String      @id @default(cuid())
-  storeId            String      @unique
-  store              Store       @relation(fields: [storeId], references: [id])
-  storeConfigId      String      @unique
-  storeConfig        StoreConfig @relation(fields: [storeConfigId], references: [id])
-  createdAt          DateTime?   @default(now()) @map(name: "created_at")
-  updatedAt          DateTime?   @default(now()) @map(name: "updated_at")
+  id            String      @id @default(cuid())
+  storeId       String      @unique
+  store         Store       @relation(fields: [storeId], references: [id])
+  storeConfigId String      @unique
+  storeConfig   StoreConfig @relation(fields: [storeConfigId], references: [id])
+  createdAt     DateTime    @default(now()) @map(name: "created_at")
+  updatedAt     DateTime    @default(now()) @map(name: "updated_at")
 
-  @@map("store_and_store_configs") 
+  @@map("store_and_store_configs")
+}
+
+model Category {
+  id        String    @id @default(uuid())
+  enabled   Boolean   @default(true)
+  name      String
+  image_url String[]  @default([])
+  product   Product[]
+  store_id  String
+  store     Store     @relation(fields: [store_id], references: [id])
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @default(now())
 }
 
 model Product {
-  id          String   @id @default(cuid())
-  name        String
-  description String?
-  price       Float
-  createdAt   DateTime? @default(now()) @map(name: "created_at")
-  updatedAt   DateTime? @default(now()) @map(name: "updated_at")
+  id                       String                     @id @default(cuid())
+  enabled                  Boolean                    @default(true)
+  image_url                String[]                   @default([])
+  name                     String
+  description              String?
+  price                    Float
+  category_id              String
+  store_id                 String
+  store                    Store                      @relation(fields: [store_id], references: [id])
+  category                 Category                   @relation(fields: [category_id], references: [id])
+  createdAt                DateTime                   @default(now())
+  updatedAt                DateTime                   @default(now())
+  ProductAndAddtionalDishe ProductAndAddtionalDishe[]
 
-  @@map("products")
+  @@map("product")
+}
+
+model AdditionalDishe {
+  id                       String                     @id @default(cuid())
+  enabled                  Boolean                    @default(true)
+  image_url                String[]                   @default([])
+  name                     String
+  description              String
+  price                    Float
+  store_id                 String
+  createdAt                DateTime                   @default(now())
+  updatedAt                DateTime                   @default(now())
+  ProductAndAddtionalDishe ProductAndAddtionalDishe[]
+
+  @@map("additional_dishe")
+}
+
+model ProductAndAddtionalDishe {
+  id                 String          @id @default(uuid())
+  enabled            Boolean         @default(true)
+  store_id           String
+  product_id         String
+  additional_dish_id String
+  store              Store           @relation(fields: [store_id], references: [id])
+  product            Product         @relation(fields: [product_id], references: [id])
+  additionalDish     AdditionalDishe @relation(fields: [additional_dish_id], references: [id])
+  createdAt          DateTime        @default(now())
+  updatedAt          DateTime        @default(now())
+
+  @@map("product_additional_dishe")
 }
