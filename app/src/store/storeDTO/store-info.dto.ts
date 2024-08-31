@@ -1,23 +1,28 @@
-import { IsBoolean, IsNotEmpty, IsString } from 'class-validator';
+import { IsNotEmpty, IsOptional, IsString, IsBoolean, IsUUID } from 'class-validator';
 
-export class CreateStoreDto {
-  @IsNotEmpty()
+export class StoreDto {
   @IsString()
+  @IsOptional()
+  id: string;
+
+  @IsString()
+  @IsNotEmpty()
   name: string;
 }
 
-export class CreateStoreInfoDto {
+export class ConfigStoreDto {
+  @IsString()
+  @IsUUID()
+  @IsOptional()
+  id: string;
+
   @IsNotEmpty()
   @IsString()
   image: string;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
-  name: string;
-
-  @IsNotEmpty()
-  @IsString()
-  description: string;
+  description?: string;
 
   @IsNotEmpty()
   @IsBoolean()

@@ -25,8 +25,8 @@ model StoreConfig {
   isOpen          Boolean  @default(true)
   location        String
   backgroundColor String
-  createdAt DateTime? @default(now()) @map(name: "created_at")
-  updatedAt DateTime? @default(now()) @map(name: "updated_at")
+  createdAt       DateTime? @default(now()) @map(name: "created_at")
+  updatedAt       DateTime? @default(now()) @map(name: "updated_at")
 
   store          StoreAndStoreConfig[]
   @@map("store_configs")

@@ -1,16 +1,14 @@
 import { Controller, Post, Body } from '@nestjs/common';
 import { StoreService } from './store.service';
-import { CreateStoreDto, CreateStoreInfoDto } from './storeDTO/store-info.dto';
+import { ConfigStoreDto, StoreDto } from './storeDTO/store-info.dto';
 
-@Controller('stores')
+
+@Controller('store')
 export class StoreController {
   constructor(private readonly storeService: StoreService) {}
 
   @Post('create') 
-  async createStoreAndInfo(
-    @Body() storeDto: CreateStoreDto,
-    @Body() infoStoreDto: CreateStoreInfoDto,
-  ) {
-    return this.storeService.createStoreAndInfo(storeDto, infoStoreDto);
+  async createStoreAndInfo(@Body() storeDto: StoreDto, storeConfigDtos: ConfigStoreDto) {
+    return this.storeService.createStoreAndConfig(storeDto, storeConfigDtos);
   }
 };
