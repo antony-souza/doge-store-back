@@ -8,49 +8,49 @@ datasource db {
 }
 
 model Store {
-  id          String      @id @default(cuid())
+  id          String @id @default(cuid())
   name        String
-  createdAt DateTime? @default(now()) @map(name: "created_at")
-  updatedAt DateTime? @default(now()) @map(name: "updated_at")
+  createdAt DateTime @default(now()) @map(name: "created_at")
+  updatedAt DateTime @default(now()) @map(name: "updated_at")
 
   storeConfig StoreAndStoreConfig[]
 
-  @@map("stores")
+  @@map("store")
 }
 
 model StoreConfig {
-  id              String   @id @default(cuid())
+  id              String   @id @default(uuid())
   image           String
   description     String
   isOpen          Boolean  @default(true)
   location        String
   backgroundColor String
-  createdAt       DateTime? @default(now()) @map(name: "created_at")
-  updatedAt       DateTime? @default(now()) @map(name: "updated_at")
+  createdAt       DateTime @default(now()) @map(name: "created_at")
+  updatedAt       DateTime @default(now()) @map(name: "updated_at")
 
   store          StoreAndStoreConfig[]
-  @@map("store_configs")
+  @@map("store_config")
 }
 
 model StoreAndStoreConfig {
-  id                 String      @id @default(cuid())
+  id                 String      @id @default(uuid())
   storeId            String      @unique
   store              Store       @relation(fields: [storeId], references: [id])
-  storeConfigId      String      @unique
+  storeConfigId      String      
   storeConfig        StoreConfig @relation(fields: [storeConfigId], references: [id])
-  createdAt          DateTime?   @default(now()) @map(name: "created_at")
-  updatedAt          DateTime?   @default(now()) @map(name: "updated_at")
+  createdAt          DateTime    @default(now()) @map(name: "created_at")
+  updatedAt          DateTime    @default(now()) @map(name: "updated_at")
 
-  @@map("store_and_store_configs") 
+  @@map("store_and_store_config") 
 }
 
 model Product {
-  id          String   @id @default(cuid())
+  id          String   @id @default(uuid())
   name        String
-  description String?
+  description String
   price       Float
-  createdAt   DateTime? @default(now()) @map(name: "created_at")
-  updatedAt   DateTime? @default(now()) @map(name: "updated_at")
+  createdAt   DateTime @default(now()) @map(name: "created_at")
+  updatedAt   DateTime @default(now()) @map(name: "updated_at")
 
-  @@map("products")
+  @@map("product")
 }
