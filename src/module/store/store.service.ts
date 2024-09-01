@@ -11,12 +11,17 @@ export class StoreService {
     storeConfigDto: ConfigStoreDto,
   ) {
     try {
+      // Verifica se já existe uma configuração com as mesmas propriedades(Entender)
       let storeConfig = await this.prisma.storeConfig.findFirst({
         where: {
-          id: storeConfigDto.id,
+          image: storeConfigDto.image,
+          description: storeConfigDto.description,
+          location: storeConfigDto.location,
+          backgroundColor: storeConfigDto.backgroundColor,
         },
       });
 
+      // Cria a configuração se não existir as propriedades(Entender)
       if (!storeConfig) {
         storeConfig = await this.prisma.storeConfig.create({
           data: {
@@ -29,7 +34,26 @@ export class StoreService {
         });
       }
 
-      // Cria a loja e associa a configuração existente ou nova
+      // Verifica se já existe uma loja com o mesmo nome e configuração(Entender)
+      const existingStore = await this.prisma.storeAndStoreConfig.findFirst({
+        where: {
+          store: {
+            name: storeDto.name,
+          },
+          storeConfig: {
+            id: storeConfig.id,
+          },
+        },
+      });
+
+      if (existingStore) {
+        throw new ConflictException(
+          "Store with the same name and configuration already exists.",
+          //"Já existe uma loja com o mesmo nome e configuração."
+        );
+      }
+
+      // Cria a loja e associa a configuração(Entender)
       const createStoreWithConfig = await this.prisma.store.create({
         data: {
           name: storeDto.name,
@@ -46,7 +70,7 @@ export class StoreService {
         include: {
           storeConfig: {
             include: {
-              storeConfig: true, // Inclui detalhes de StoreConfig na resposta
+              storeConfig: true, // Inclui detalhes de StoreConfig na resposta(Entender)
             },
           },
         },
@@ -54,7 +78,7 @@ export class StoreService {
 
       return createStoreWithConfig;
     } catch (err) {
-      throw new ConflictException(err);
+      throw new ConflictException("message:", err);
     }
   }
 }
