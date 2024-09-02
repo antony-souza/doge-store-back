@@ -7,11 +7,14 @@ export class StoreController {
   constructor(private readonly storeService: StoreService) {}
 
   @Post("/create/store")
-  async createStoreAndInfo(
+  async createAndAssociateConfig(
     @Body() body: { storeDto: StoreDto; storeConfigDto: ConfigStoreDto },
   ) {
     const { storeDto, storeConfigDto } = body;
-    return this.storeService.createStoreAndConfig(storeDto, storeConfigDto);
+    return this.storeService.createAndAssociateConfigToStore(
+      storeDto,
+      storeConfigDto,
+    );
   }
 
   @Post("/create/categories")
@@ -23,5 +26,21 @@ export class StoreController {
     },
   ) {
     return this.storeService.createAndAssociateCategoriesToStore(body);
+  }
+
+  @Post("/create/product")
+  async createAndAssociateProduct(
+    @Body()
+    body: {
+      store_id: string;
+      products: {
+        name: string;
+        price: number;
+        image_url: string[];
+        category_id: string;
+      }[];
+    },
+  ) {
+    return this.storeService.createAndAssociateProductToStore(body);
   }
 }

@@ -10,7 +10,7 @@ import { ConfigStoreDto, StoreDto } from "./storeDTO/store-info.dto";
 export class StoreService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async createStoreAndConfig(
+  async createAndAssociateConfigToStore(
     storeDto: StoreDto,
     storeConfigDto: ConfigStoreDto,
   ) {
@@ -87,7 +87,6 @@ export class StoreService {
   }) {
     const { storeId, categories } = body;
 
-    // Verifica se a loja existe
     const store = await this.prisma.store.findUnique({
       where: { id: storeId },
     });
@@ -107,6 +106,41 @@ export class StoreService {
     return {
       message: "Categories created and associated to store successfully",
       createdCategories,
+    };
+  }
+
+  async createAndAssociateProductToStore(body: {
+    store_id: string;
+    products: {
+      name: string;
+      price: number;
+      image_url: string[];
+      category_id: string;
+    }[];
+  }) {
+    const { store_id, products } = body;
+
+    const store = await this.prisma.store.findUnique({
+      where: { id: store_id },
+    });
+
+    if (!store) {
+      throw new NotFoundException("Store not found");
+    }
+
+    // Cria os produtos(que contem a category dentro) e os associa à loja
+    const createdProducts = await this.prisma.product.createMany({
+      data: products.map((product) => ({
+        ...product,
+        store_id: store_id,
+        category_id: product.category_id,
+      })),
+    });
+
+    return {
+      message:
+        "Products created and associated to store and category successfully",
+      createdProducts,
     };
   }
 }
