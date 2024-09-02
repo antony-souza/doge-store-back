@@ -14,7 +14,7 @@ model Store {
   updated_at               DateTime                   @default(now())
   category                 Category[]
   store_config             StoreAndStoreConfig[]
-  Product                  Product[]
+  product                  Product[]
   ProductAndAddtionalDishe ProductAndAddtionalDishe[]
 
   @@map("store")

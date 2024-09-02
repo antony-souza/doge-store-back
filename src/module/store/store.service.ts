@@ -1,4 +1,8 @@
-import { ConflictException, Injectable } from "@nestjs/common";
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from "@nestjs/common";
 import { PrismaService } from "src/database/prisma.service";
 import { ConfigStoreDto, StoreDto } from "./storeDTO/store-info.dto";
 
@@ -75,5 +79,34 @@ export class StoreService {
         err.message,
       );
     }
+  }
+
+  async createAndAssociateCategoriesToStore(body: {
+    storeId: string;
+    categories: { name: string; imageUrl: string }[];
+  }) {
+    const { storeId, categories } = body;
+
+    // Verifica se a loja existe
+    const store = await this.prisma.store.findUnique({
+      where: { id: storeId },
+    });
+
+    if (!store) {
+      throw new NotFoundException("Store not found");
+    }
+
+    // Cria as categorias e as associa à loja
+    const createdCategories = await this.prisma.category.createMany({
+      data: categories.map((category) => ({
+        ...category,
+        store_id: storeId, // Associa o storeId a cada categoria
+      })),
+    });
+
+    return {
+      message: "Categories created and associated to store successfully",
+      createdCategories,
+    };
   }
 }
