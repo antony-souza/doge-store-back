@@ -4,7 +4,7 @@ import {
   IsString,
   IsBoolean,
   IsUUID,
-} from 'class-validator';
+} from "class-validator";
 
 export class StoreDto {
   @IsString()
@@ -24,21 +24,29 @@ export class ConfigStoreDto {
 
   @IsNotEmpty()
   @IsString()
-  image: string;
+  name: string;
+
+  @IsNotEmpty()
+  @IsString()
+  phone: string;
+
+  @IsNotEmpty()
+  @IsString()
+  address: string;
 
   @IsOptional()
   @IsString()
-  description?: string;
+  description: string;
 
   @IsNotEmpty()
   @IsBoolean()
-  isOpen: boolean;
+  is_open: boolean;
 
   @IsNotEmpty()
   @IsString()
-  location: string;
+  image_url: string;
 
   @IsNotEmpty()
   @IsString()
-  backgroundColor: string;
+  background_color: string;
 }

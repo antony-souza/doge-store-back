@@ -11,74 +11,69 @@ export class StoreService {
     storeConfigDto: ConfigStoreDto,
   ) {
     try {
-      // Verifica se já existe uma configuração com as mesmas propriedades(Entender)
+      // Verifica se já existe uma configuração com as mesmas propriedades(Compreensão de código)
       let storeConfig = await this.prisma.storeConfig.findFirst({
         where: {
-          image: storeConfigDto.image,
+          image_url: storeConfigDto.image_url,
           description: storeConfigDto.description,
-          location: storeConfigDto.location,
-          backgroundColor: storeConfigDto.backgroundColor,
+          address: storeConfigDto.address,
+          background_color: storeConfigDto.background_color,
+          phone: storeConfigDto.phone,
         },
       });
 
-      // Cria a configuração se não existir as propriedades(Entender)
+      // Cria a configuração se não existir(Compreensão de código)
       if (!storeConfig) {
         storeConfig = await this.prisma.storeConfig.create({
           data: {
-            image: storeConfigDto.image,
+            name: storeConfigDto.name,
+            image_url: storeConfigDto.image_url,
             description: storeConfigDto.description,
-            isOpen: storeConfigDto.isOpen,
-            location: storeConfigDto.location,
-            backgroundColor: storeConfigDto.backgroundColor,
+            is_open: storeConfigDto.is_open,
+            phone: storeConfigDto.phone,
+            address: storeConfigDto.address,
+            background_color: storeConfigDto.background_color,
           },
         });
       }
 
-      // Verifica se já existe uma loja com o mesmo nome e configuração(Entender)
-      const existingStore = await this.prisma.storeAndStoreConfig.findFirst({
+      // Verifica se já existe uma loja com o mesmo nome(Compreensão de código)
+      const existingStore = await this.prisma.store.findFirst({
         where: {
-          store: {
-            name: storeDto.name,
-          },
-          storeConfig: {
-            id: storeConfig.id,
-          },
+          name: storeDto.name,
         },
       });
 
       if (existingStore) {
-        throw new ConflictException(
-          "Store with the same name and configuration already exists.",
-          //"Já existe uma loja com o mesmo nome e configuração."
-        );
+        throw new ConflictException("Store with the same name already exists.");
       }
 
-      // Cria a loja e associa a configuração(Entender)
-      const createStoreWithConfig = await this.prisma.store.create({
+      const store = await this.prisma.store.create({
         data: {
           name: storeDto.name,
-          storeConfig: {
-            create: {
-              storeConfig: {
-                connect: {
-                  id: storeConfig.id,
-                },
-              },
-            },
-          },
-        },
-        include: {
-          storeConfig: {
-            include: {
-              storeConfig: true, // Inclui detalhes de StoreConfig na resposta(Entender)
-            },
-          },
         },
       });
 
-      return createStoreWithConfig;
+      // Cria a entrada na tabela intermediária para associar a loja e a configuração(Compreensão de código)
+      await this.prisma.storeAndStoreConfig.create({
+        data: {
+          store_id: store.id,
+          store_config_id: storeConfig.id,
+        },
+      });
+
+      return {
+        message: "Store created successfully",
+        data: {
+          store: store,
+          store_config: storeConfig,
+        },
+      };
     } catch (err) {
-      throw new ConflictException("message:", err);
+      throw new ConflictException(
+        "An error occurred while creating the store.",
+        err.message,
+      );
     }
   }
 }
