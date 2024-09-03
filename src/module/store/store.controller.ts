@@ -1,6 +1,5 @@
 import { Controller, Post, Body, Delete } from "@nestjs/common";
-import { StoreService } from "./store.service";
-import { ConfigStoreDto, StoreDto } from "./storeDTO/store-info.dto";
+import { IStoreConfig, StoreService } from "./store.service";
 
 @Controller("/store")
 export class StoreController {
@@ -8,13 +7,9 @@ export class StoreController {
 
   @Post("/create/store")
   async createAndAssociateConfig(
-    @Body() body: { storeDto: StoreDto; storeConfigDto: ConfigStoreDto },
+    @Body() body: { name: string; store_config: IStoreConfig },
   ) {
-    const { storeDto, storeConfigDto } = body;
-    return this.storeService.createAndAssociateConfigToStore(
-      storeDto,
-      storeConfigDto,
-    );
+    return this.storeService.createStoreAndConfig(body);
   }
 
   @Post("/create/categories")
@@ -22,7 +17,7 @@ export class StoreController {
     @Body()
     body: {
       storeId: string;
-      categories: { name: string; imageUrl: string }[];
+      categories: { name: string; image_url: string[] }[];
     },
   ) {
     return this.storeService.createAndAssociateCategoriesToStore(body);
@@ -54,7 +49,7 @@ export class StoreController {
     return this.storeService.deleteStoreAndRelationships(body);
   }
 
-  /*  @Delete("/delete/all/store-configs")
+  /* @Delete("/delete/all/store-configs")
   async deleteAllStoreConfigs() {
     return this.storeService.deleteAllStoreConfigs();
   } */

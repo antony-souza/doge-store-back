@@ -13,9 +13,9 @@ model Store {
   created_at               DateTime                   @default(now())
   updated_at               DateTime                   @default(now())
   category                 Category[]
-  store_config             StoreAndStoreConfig[]
   product                  Product[]
   ProductAndAddtionalDishe ProductAndAddtionalDishe[]
+  store_config             StoreConfig[]          
 
   @@map("store")
 }
@@ -31,22 +31,10 @@ model StoreConfig {
   background_color String
   created_at       DateTime @default(now())
   updated_at       DateTime @default(now())
+  store_id         String   
+  store            Store    @relation(fields: [store_id], references: [id]) 
 
-  store StoreAndStoreConfig[]
-
-  @@map("store_configs")
-}
-
-model StoreAndStoreConfig {
-  id              String      @id @default(uuid())
-  store_id        String      @unique
-  store           Store       @relation(fields: [store_id], references: [id])
-  store_config_id String      @unique
-  store_config    StoreConfig @relation(fields: [store_config_id], references: [id])
-  created_at      DateTime    @default(now())
-  updated_at      DateTime    @default(now())
-
-  @@map("store_and_store_configs")
+  @@map("store_config")
 }
 
 model Category {

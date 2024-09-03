@@ -1,92 +1,75 @@
 import {
   ConflictException,
   Injectable,
+  InternalServerErrorException,
   NotFoundException,
 } from "@nestjs/common";
 import { PrismaService } from "src/database/prisma.service";
-import { ConfigStoreDto, StoreDto } from "./storeDTO/store-info.dto";
+
+export interface IStoreConfig {
+  name: string;
+  phone: string;
+  address: string;
+  description: string;
+  is_open: boolean;
+  image_url: string;
+  background_color: string;
+}
 
 @Injectable()
 export class StoreService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async createAndAssociateConfigToStore(
-    storeDto: StoreDto,
-    storeConfigDto: ConfigStoreDto,
-  ) {
+  async createStoreAndConfig(body: {
+    name: string;
+    store_config: IStoreConfig;
+  }) {
+    const { name, store_config } = body;
+
     try {
-      // Verifica se já existe uma configuração com as mesmas propriedades(Compreensão de código)
-      let storeConfig = await this.prisma.storeConfig.findFirst({
-        where: {
-          image_url: storeConfigDto.image_url,
-          description: storeConfigDto.description,
-          address: storeConfigDto.address,
-          background_color: storeConfigDto.background_color,
-          phone: storeConfigDto.phone,
-        },
-      });
-
-      // Cria a configuração se não existir(Compreensão de código)
-      if (!storeConfig) {
-        storeConfig = await this.prisma.storeConfig.create({
-          data: {
-            name: storeConfigDto.name,
-            image_url: storeConfigDto.image_url,
-            description: storeConfigDto.description,
-            is_open: storeConfigDto.is_open,
-            phone: storeConfigDto.phone,
-            address: storeConfigDto.address,
-            background_color: storeConfigDto.background_color,
-          },
-        });
-      }
-
-      // Verifica se já existe uma loja com o mesmo nome(Compreensão de código)
+      // Verifica se já existe uma loja com o mesmo nome e configuração
       const existingStore = await this.prisma.store.findFirst({
-        where: {
-          name: storeDto.name,
-        },
+        where: { name },
+        include: { store_config: true },
       });
 
       if (existingStore) {
-        throw new ConflictException("Store with the same name already exists.");
+        throw new ConflictException(
+          `Store with name "${name}" and store_config ${store_config.name} already exists`,
+        );
       }
 
+      // Cria a loja com a configuração
       const store = await this.prisma.store.create({
         data: {
-          name: storeDto.name,
-        },
-      });
-
-      // Cria a entrada na tabela intermediária para associar a loja e a configuração(Compreensão de código)
-      await this.prisma.storeAndStoreConfig.create({
-        data: {
-          store_id: store.id,
-          store_config_id: storeConfig.id,
+          name,
+          store_config: {
+            create: store_config,
+          },
         },
       });
 
       return {
-        message: "Store created successfully",
-        data: {
-          store: store,
-          store_config: storeConfig,
-        },
+        message: "Store and store configuration created successfully",
+        store,
       };
-    } catch (err) {
-      throw new ConflictException(
-        "An error occurred while creating the store.",
-        err.message,
+    } catch (error) {
+      console.error("Error creating store and store configuration:", error);
+      throw new InternalServerErrorException(
+        "An error occurred while creating the store and store configuration.",
       );
     }
   }
 
+  /* Adicionar msg de criação do item(category) que foi criado de categories
+   antes de pular para o próximo */
   async createAndAssociateCategoriesToStore(body: {
     storeId: string;
-    categories: { name: string; imageUrl: string }[];
+    categories: { name: string; image_url: string[] }[];
   }) {
     const { storeId, categories } = body;
 
+    // Verifica se a loja existe
     const store = await this.prisma.store.findUnique({
       where: { id: storeId },
     });
@@ -95,13 +78,34 @@ export class StoreService {
       throw new NotFoundException("Store not found");
     }
 
-    // Cria as categorias e as associa à loja
-    const createdCategories = await this.prisma.category.createMany({
-      data: categories.map((category) => ({
-        ...category,
-        store_id: storeId, // Associa o storeId a cada categoria
-      })),
-    });
+    const createdCategories = [];
+
+    for (const category of categories) {
+      // Verifica se a categoria já existe na loja
+      const existingCategory = await this.prisma.category.findFirst({
+        where: {
+          name: category.name,
+          store_id: storeId,
+        },
+      });
+
+      if (existingCategory) {
+        throw new ConflictException(
+          `Category with name "${category.name}" already exists in this store.`,
+        );
+      }
+
+      // Cria a categoria se não existir
+      const newCategory = await this.prisma.category.create({
+        data: {
+          name: category.name,
+          image_url: category.image_url,
+          store_id: storeId,
+        },
+      });
+
+      createdCategories.push(newCategory);
+    }
 
     return {
       message: "Categories created and associated to store successfully",
@@ -109,6 +113,8 @@ export class StoreService {
     };
   }
 
+  /* Adicionar msg de criação do item(product) que foi criado de products
+   antes de pular para o próximo */
   async createAndAssociateProductToStore(body: {
     store_id: string;
     products: {
@@ -128,14 +134,33 @@ export class StoreService {
       throw new NotFoundException("Store not found");
     }
 
-    // Cria os produtos(que contem a category dentro) e os associa à loja
-    const createdProducts = await this.prisma.product.createMany({
-      data: products.map((product) => ({
-        ...product,
-        store_id: store_id,
-        category_id: product.category_id,
-      })),
-    });
+    const createdProducts = [];
+    for (const product of products) {
+      // Verifica item(produto) por item(produto) se já existe na loja
+      const existingProduct = await this.prisma.product.findFirst({
+        where: {
+          name: product.name,
+          store_id: store_id,
+          category_id: product.category_id,
+        },
+      });
+
+      if (existingProduct) {
+        throw new ConflictException(
+          `Product with name "${product.name}" already exists in this store.`,
+        );
+      }
+
+      // Cria o produto se não existir
+      const createdProduct = await this.prisma.product.create({
+        data: {
+          ...product,
+          store_id: store_id,
+        },
+      });
+
+      createdProducts.push(createdProduct);
+    }
 
     return {
       message:
@@ -146,6 +171,7 @@ export class StoreService {
 
   async deleteStoreAndRelationships(body: { store_id: string }) {
     const { store_id } = body;
+
     const store = await this.prisma.store.findUnique({
       where: { id: store_id },
       include: {
@@ -175,8 +201,7 @@ export class StoreService {
       where: { store_id: store_id },
     });
 
-    // Deletar as configurações relacionadas à loja
-    await this.prisma.storeAndStoreConfig.deleteMany({
+    await this.prisma.storeConfig.deleteMany({
       where: { store_id: store_id },
     });
 
@@ -190,7 +215,7 @@ export class StoreService {
     };
   }
 
-  /*  async deleteAllStoreConfigs() {
+  /* async deleteAllStoreConfigs() {
     const storeConfigs = await this.prisma.storeConfig.findMany();
 
     if (storeConfigs.length === 0) {
