@@ -143,4 +143,64 @@ export class StoreService {
       createdProducts,
     };
   }
+
+  async deleteStoreAndRelationships(body: { store_id: string }) {
+    const { store_id } = body;
+    const store = await this.prisma.store.findUnique({
+      where: { id: store_id },
+      include: {
+        store_config: true,
+        category: true,
+        product: true,
+        ProductAndAddtionalDishe: true,
+      },
+    });
+
+    if (!store) {
+      throw new NotFoundException("Store not found");
+    }
+
+    // Deletar os registros relacionados na tabela ProductAndAdditionalDishe
+    await this.prisma.productAndAddtionalDishe.deleteMany({
+      where: { store_id: store_id },
+    });
+
+    // Deletar os produtos relacionados à loja
+    await this.prisma.product.deleteMany({
+      where: { store_id: store_id },
+    });
+
+    // Deletar as categorias relacionadas à loja
+    await this.prisma.category.deleteMany({
+      where: { store_id: store_id },
+    });
+
+    // Deletar as configurações relacionadas à loja
+    await this.prisma.storeAndStoreConfig.deleteMany({
+      where: { store_id: store_id },
+    });
+
+    // Finalmente, deletar a loja
+    await this.prisma.store.delete({
+      where: { id: store_id },
+    });
+
+    return {
+      message: "Store and all related data deleted successfully",
+    };
+  }
+
+  /*  async deleteAllStoreConfigs() {
+    const storeConfigs = await this.prisma.storeConfig.findMany();
+
+    if (storeConfigs.length === 0) {
+      throw new NotFoundException("No store configurations found");
+    }
+
+    await this.prisma.storeConfig.deleteMany({});
+
+    return {
+      message: "All store configurations deleted successfully",
+    };
+  } */
 }

@@ -1,4 +1,4 @@
-import { Controller, Post, Body } from "@nestjs/common";
+import { Controller, Post, Body, Delete } from "@nestjs/common";
 import { StoreService } from "./store.service";
 import { ConfigStoreDto, StoreDto } from "./storeDTO/store-info.dto";
 
@@ -43,4 +43,19 @@ export class StoreController {
   ) {
     return this.storeService.createAndAssociateProductToStore(body);
   }
+
+  @Delete("/delete/store")
+  async deleteStore(
+    @Body()
+    body: {
+      store_id: string;
+    },
+  ) {
+    return this.storeService.deleteStoreAndRelationships(body);
+  }
+
+  /*  @Delete("/delete/all/store-configs")
+  async deleteAllStoreConfigs() {
+    return this.storeService.deleteAllStoreConfigs();
+  } */
 }
