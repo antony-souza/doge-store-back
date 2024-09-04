@@ -16,6 +16,13 @@ export interface IStoreConfig {
   background_color: string;
 }
 
+export interface IProduct {
+  name: string;
+  price: number;
+  image_url: string[];
+  category_id: string;
+}
+
 @Injectable()
 export class StoreService {
   constructor(private readonly prisma: PrismaService) {}
@@ -117,12 +124,7 @@ export class StoreService {
    antes de pular para o próximo */
   async createAndAssociateProductToStore(body: {
     store_id: string;
-    products: {
-      name: string;
-      price: number;
-      image_url: string[];
-      category_id: string;
-    }[];
+    products: IProduct[];
   }) {
     const { store_id, products } = body;
 

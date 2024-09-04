@@ -1,10 +1,14 @@
-import { Controller, Post, Body, Delete } from "@nestjs/common";
-import { IStoreConfig, StoreService } from "./store.service";
+import { Controller, Post, Body, Delete, UseGuards } from "@nestjs/common";
+import { IProduct, IStoreConfig, StoreService } from "./store.service";
+import { Roles, RolesGuard } from "src/database/role.service";
+import { JwtAuthGuard } from "src/jwt/auth.guard.service";
 
 @Controller("/store")
+@UseGuards(JwtAuthGuard, RolesGuard)
 export class StoreController {
   constructor(private readonly storeService: StoreService) {}
 
+  @Roles("admin")
   @Post("/create/store")
   async createAndAssociateConfig(
     @Body() body: { name: string; store_config: IStoreConfig },
@@ -28,12 +32,7 @@ export class StoreController {
     @Body()
     body: {
       store_id: string;
-      products: {
-        name: string;
-        price: number;
-        image_url: string[];
-        category_id: string;
-      }[];
+      products: IProduct[];
     },
   ) {
     return this.storeService.createAndAssociateProductToStore(body);

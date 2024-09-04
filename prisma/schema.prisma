@@ -7,6 +7,23 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum Role {
+  admin
+  user
+}
+
+model User {
+  id         String   @id @default(uuid())
+  email      String   @unique
+  password   String
+  name       String
+  role       Role     @default(user)
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now())
+
+  @@map("user")
+}
+
 model Store {
   id                       String                     @id @default(uuid())
   name                     String
@@ -15,7 +32,7 @@ model Store {
   category                 Category[]
   product                  Product[]
   ProductAndAddtionalDishe ProductAndAddtionalDishe[]
-  store_config             StoreConfig[]          
+  store_config             StoreConfig[]
 
   @@map("store")
 }
@@ -31,8 +48,8 @@ model StoreConfig {
   background_color String
   created_at       DateTime @default(now())
   updated_at       DateTime @default(now())
-  store_id         String   
-  store            Store    @relation(fields: [store_id], references: [id]) 
+  store_id         String
+  store            Store    @relation(fields: [store_id], references: [id])
 
   @@map("store_config")
 }
