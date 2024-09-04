@@ -27,6 +27,26 @@ export interface IProduct {
 export class StoreService {
   constructor(private readonly prisma: PrismaService) {}
 
+  async getAllStores(query: { name: string }) {
+    const { name } = query;
+    try {
+      const store = await this.prisma.store.findMany({
+        where: { name: { equals: name, mode: "insensitive" } },
+        include: {
+          store_config: true,
+          category: true,
+          product: true,
+        },
+      });
+      return store;
+    } catch (error) {
+      console.error("Error getting all stores:", error);
+      throw new InternalServerErrorException(
+        "An error occurred while getting all stores.",
+      );
+    }
+  }
+
   async createStoreAndConfig(body: {
     name: string;
     store_config: IStoreConfig;

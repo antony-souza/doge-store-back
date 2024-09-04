@@ -1,13 +1,26 @@
-import { Controller, Post, Body, Delete, UseGuards } from "@nestjs/common";
+import {
+  Controller,
+  Post,
+  Body,
+  Delete,
+  UseGuards,
+  Query,
+  Get,
+} from "@nestjs/common";
 import { IProduct, IStoreConfig, StoreService } from "./store.service";
 import { Roles, RolesGuard } from "src/database/role.service";
 import { JwtAuthGuard } from "src/jwt/auth.guard.service";
 
 @Controller("/store")
-@UseGuards(JwtAuthGuard, RolesGuard)
 export class StoreController {
   constructor(private readonly storeService: StoreService) {}
 
+  @Get("/find")
+  async getAllStores(@Query() query: { name: string }) {
+    return this.storeService.getAllStores(query);
+  }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles("admin")
   @Post("/create/store")
   async createAndAssociateConfig(
@@ -16,6 +29,8 @@ export class StoreController {
     return this.storeService.createStoreAndConfig(body);
   }
 
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles("admin")
   @Post("/create/categories")
   async createAndAssociateCategories(
     @Body()
@@ -27,6 +42,8 @@ export class StoreController {
     return this.storeService.createAndAssociateCategoriesToStore(body);
   }
 
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles("admin")
   @Post("/create/product")
   async createAndAssociateProduct(
     @Body()
@@ -38,6 +55,8 @@ export class StoreController {
     return this.storeService.createAndAssociateProductToStore(body);
   }
 
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles("admin")
   @Delete("/delete/store")
   async deleteStore(
     @Body()
