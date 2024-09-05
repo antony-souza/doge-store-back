@@ -3,13 +3,13 @@ import {
   Post,
   Body,
   Delete,
-  UseGuards,
   Query,
   Get,
+  UseGuards,
 } from "@nestjs/common";
 import { IProduct, IStoreConfig, StoreService } from "./store.service";
-import { Roles, RolesGuard } from "src/database/role.service";
 import { JwtAuthGuard } from "src/jwt/auth.guard.service";
+import { Roles, RolesGuard } from "src/database/role.service";
 
 @Controller("/store")
 export class StoreController {
