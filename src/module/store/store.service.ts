@@ -27,26 +27,6 @@ export interface IProduct {
 export class StoreService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async getAllStores(query: { name: string }) {
-    const { name } = query;
-    try {
-      const store = await this.prisma.store.findMany({
-        where: { name: { equals: name, mode: "insensitive" } },
-        include: {
-          store_config: true,
-          category: true,
-          product: true,
-        },
-      });
-      return store;
-    } catch (error) {
-      console.error("Error getting all stores:", error);
-      throw new InternalServerErrorException(
-        "An error occurred while getting all stores.",
-      );
-    }
-  }
-
   async createStoreAndConfig(body: {
     name: string;
     store_config: IStoreConfig;
@@ -88,17 +68,16 @@ export class StoreService {
     }
   }
 
-  /* Adicionar msg de criação do item(category) que foi criado de categories
-   antes de pular para o próximo */
   async createAndAssociateCategoriesToStore(body: {
     storeId: string;
-    categories: { name: string; image_url: string[] }[];
+    categories: { name: string; image_url: string[]; border_color: string }[];
   }) {
     const { storeId, categories } = body;
 
     // Verifica se a loja existe
     const store = await this.prisma.store.findUnique({
       where: { id: storeId },
+      include: { store_config: true },
     });
 
     if (!store) {
@@ -122,7 +101,7 @@ export class StoreService {
         );
       }
 
-      // Cria a categoria se não existir
+      // Cria a categoria se não existir, aplicando a cor de fundo da loja
       const newCategory = await this.prisma.category.create({
         data: {
           name: category.name,
@@ -140,8 +119,6 @@ export class StoreService {
     };
   }
 
-  /* Adicionar msg de criação do item(product) que foi criado de products
-   antes de pular para o próximo */
   async createAndAssociateProductToStore(body: {
     store_id: string;
     products: IProduct[];
@@ -191,6 +168,41 @@ export class StoreService {
     };
   }
 
+  async createAndAssociateFeaturedProducts(body: {
+    store_id: string;
+    product_ids: string[]; // IDs dos produtos para o destaque
+  }) {
+    const { store_id, product_ids } = body;
+
+    // Verifica se a loja existe
+    const store = await this.prisma.store.findUnique({
+      where: { id: store_id },
+    });
+
+    if (!store) {
+      throw new NotFoundException("Store not found");
+    }
+
+    // Cria o registro de FeaturedProducts
+    const featuredProducts = await this.prisma.featuredProducts.create({
+      data: {
+        store: { connect: { id: store_id } }, // Conecta a loja
+        product: {
+          connect: product_ids.map((id) => ({ id })), // Conecta os produtos existentes
+        },
+      },
+      include: {
+        product: true, // Inclui os produtos associados na resposta
+        store: true, // Inclui a loja associada na resposta
+      },
+    });
+
+    return {
+      message: "Featured products created and associated successfully",
+      featuredProducts,
+    };
+  }
+
   async deleteStoreAndRelationships(body: { store_id: string }) {
     const { store_id } = body;
 
@@ -236,18 +248,4 @@ export class StoreService {
       message: "Store and all related data deleted successfully",
     };
   }
-
-  /* async deleteAllStoreConfigs() {
-    const storeConfigs = await this.prisma.storeConfig.findMany();
-
-    if (storeConfigs.length === 0) {
-      throw new NotFoundException("No store configurations found");
-    }
-
-    await this.prisma.storeConfig.deleteMany({});
-
-    return {
-      message: "All store configurations deleted successfully",
-    };
-  } */
 }

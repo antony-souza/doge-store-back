@@ -7,11 +7,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum Role {
-  admin
-  user
-}
-
 model User {
   id         String   @id @default(uuid())
   email      String   @unique
@@ -30,6 +25,7 @@ model Store {
   created_at               DateTime                   @default(now())
   updated_at               DateTime                   @default(now())
   category                 Category[]
+  featured_products        FeaturedProducts[]
   product                  Product[]
   ProductAndAddtionalDishe ProductAndAddtionalDishe[]
   store_config             StoreConfig[]
@@ -59,31 +55,44 @@ model Category {
   enabled    Boolean   @default(true)
   name       String
   image_url  String[]  @default([])
-  product    Product[]
   store_id   String
-  store      Store     @relation(fields: [store_id], references: [id])
   created_at DateTime  @default(now())
   updated_at DateTime  @default(now())
+  store      Store     @relation(fields: [store_id], references: [id])
+  product    Product[]
 
   @@map("category")
 }
 
 model Product {
   id                       String                     @id @default(uuid())
-  enabled                  Boolean                    @default(true)
-  image_url                String[]                   @default([])
   name                     String
   description              String?
   price                    Float
-  category_id              String
-  store_id                 String
-  store                    Store                      @relation(fields: [store_id], references: [id])
-  category                 Category                   @relation(fields: [category_id], references: [id])
   created_at               DateTime                   @default(now())
   updated_at               DateTime                   @default(now())
+  category_id              String
+  enabled                  Boolean                    @default(true)
+  image_url                String[]                   @default([])
+  store_id                 String
+  category                 Category                   @relation(fields: [category_id], references: [id])
+  store                    Store                      @relation(fields: [store_id], references: [id])
   ProductAndAddtionalDishe ProductAndAddtionalDishe[]
+  featured_products        FeaturedProducts[]         @relation("FeaturedProductsToProduct")
 
   @@map("product")
+}
+
+model FeaturedProducts {
+  id         String    @id @default(uuid())
+  enabled    Boolean   @default(true)
+  store_id   String
+  created_at DateTime  @default(now())
+  updated_at DateTime  @default(now())
+  store      Store     @relation(fields: [store_id], references: [id])
+  product    Product[] @relation("FeaturedProductsToProduct")
+
+  @@map("featured_products")
 }
 
 model AdditionalDishe {
@@ -107,11 +116,16 @@ model ProductAndAddtionalDishe {
   store_id           String
   product_id         String
   additional_dish_id String
-  store              Store           @relation(fields: [store_id], references: [id])
-  product            Product         @relation(fields: [product_id], references: [id])
-  additional_dish    AdditionalDishe @relation(fields: [additional_dish_id], references: [id])
   created_at         DateTime        @default(now())
   updated_at         DateTime        @default(now())
+  additional_dish    AdditionalDishe @relation(fields: [additional_dish_id], references: [id])
+  product            Product         @relation(fields: [product_id], references: [id])
+  store              Store           @relation(fields: [store_id], references: [id])
 
   @@map("product_additional_dishe")
+}
+
+enum Role {
+  admin
+  user
 }
