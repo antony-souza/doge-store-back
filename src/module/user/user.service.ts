@@ -14,7 +14,7 @@ export class UserService {
     role: Role;
   }) {
     try {
-      const { name, email, password } = body;
+      const { name, email, password, role } = body;
 
       // Verifica se o usuário já existe pelo e-mail
       const existingUser = await this.prisma.user.findFirst({
@@ -22,9 +22,7 @@ export class UserService {
       });
 
       if (existingUser) {
-        throw new ConflictException(
-          `User with email "${email}" already exists`,
-        );
+        throw new ConflictException("User already exists");
       }
 
       const salt = await bcrypt.genSalt(11);
@@ -36,7 +34,7 @@ export class UserService {
           name,
           email,
           password: hashedPassword,
-          role: body.role,
+          role,
         },
       });
 
