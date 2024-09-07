@@ -3,12 +3,13 @@ import { StoreService } from "./store.service";
 import { StoreController } from "./store.controller";
 import { PrismaService } from "src/database/prisma.service";
 import { AuthJwtService } from "src/jwt/auth.jwt.service";
-import { PublicStoreModule } from "./public/public.module";
+import { PublicModule } from "./public/public.module";
+import { PublicService } from "./public/public.service";
 
 @Module({
-  providers: [StoreService, PrismaService, AuthJwtService],
+  providers: [StoreService, PrismaService, AuthJwtService, PublicService],
   controllers: [StoreController],
   exports: [StoreService],
-  imports: [PublicStoreModule],
+  imports: [PublicModule],
 })
 export class StoreModule {}

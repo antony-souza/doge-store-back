@@ -1,4 +1,12 @@
-import { Controller, Post, Body, Delete, UseGuards } from "@nestjs/common";
+import {
+  Controller,
+  Post,
+  Body,
+  Delete,
+  UseGuards,
+  Get,
+  Query,
+} from "@nestjs/common";
 import { IProduct, IStoreConfig, StoreService } from "./store.service";
 import { JwtAuthGuard } from "src/jwt/auth.guard.service";
 import { Roles, RolesGuard } from "src/database/role.service";
@@ -7,6 +15,12 @@ import { Roles, RolesGuard } from "src/database/role.service";
 @UseGuards(JwtAuthGuard, RolesGuard)
 export class StoreController {
   constructor(private readonly storeService: StoreService) {}
+
+  @Roles("admin")
+  @Get("/search_store")
+  async searchStore(@Query() query: { storeName: string }) {
+    return this.storeService.getStoreByName(query);
+  }
 
   @Roles("admin")
   @Post("/create/store")

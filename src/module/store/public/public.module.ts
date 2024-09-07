@@ -1,11 +1,12 @@
 import { Module } from "@nestjs/common";
-
+import { PublicService } from "./public.service";
 import { PublicController } from "./public.controller";
-import { PublicStoreService } from "./public.service";
 import { PrismaService } from "src/database/prisma.service";
+import { StoreService } from "../store.service";
 
 @Module({
-  providers: [PublicStoreService, PrismaService],
   controllers: [PublicController],
+  providers: [PublicService, PrismaService, StoreService],
+  imports: [],
 })
-export class PublicStoreModule {}
+export class PublicModule {}

@@ -7,6 +7,7 @@ import {
 import { PrismaService } from "src/database/prisma.service";
 
 export interface IStoreConfig {
+  id: string;
   name: string;
   phone: string;
   address: string;
@@ -26,6 +27,67 @@ export interface IProduct {
 @Injectable()
 export class StoreService {
   constructor(private readonly prisma: PrismaService) {}
+
+  /* Searchs Public(FrontHome) And Private(DogeAdmin)*/
+  async getStoreByName(query: { storeName: string }) {
+    const { storeName } = query;
+
+    const store = await this.prisma.store.findMany({
+      where: { name: { equals: storeName, mode: "insensitive" } },
+      include: {
+        store_config: {
+          select: {
+            id: true,
+            name: true,
+            phone: true,
+            address: true,
+            description: true,
+            is_open: true,
+            image_url: true,
+            background_color: true,
+          },
+        },
+        category: {
+          select: {
+            id: true,
+            name: true,
+            image_url: true,
+          },
+        },
+        product: {
+          select: {
+            id: true,
+            name: true,
+            price: true,
+            image_url: true,
+            category_id: true,
+          },
+        },
+        featured_products: {
+          select: {
+            id: true,
+            store_id: true,
+            product: {
+              select: {
+                id: true,
+                name: true,
+                price: true,
+                image_url: true,
+                description: true,
+                category_id: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    if (store.length === 0) {
+      throw new NotFoundException("Store not found");
+    }
+
+    return store;
+  }
 
   async createStoreAndConfig(body: {
     name: string;
