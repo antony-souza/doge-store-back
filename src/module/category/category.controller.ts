@@ -32,6 +32,7 @@ export class CategoryController {
     return this.categoryService.create({
       name: createCategoryDto.name,
       upload_file: upload_file,
+      store_id: createCategoryDto.store_id,
     });
   }
 

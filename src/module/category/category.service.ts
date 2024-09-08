@@ -12,8 +12,19 @@ export class CategoryService {
   ) {}
 
   async create(createCategoryDto: CreateCategoryDto) {
-    await this.uploadFileService.upload(createCategoryDto.upload_file);
-    return "This action adds a new category";
+    const url = await this.uploadFileService.upload(
+      createCategoryDto.upload_file,
+    );
+
+    const response = await this.prismaService.category.create({
+      data: {
+        name: createCategoryDto.name,
+        store_id: createCategoryDto.store_id,
+        image_url: [url],
+      },
+    });
+
+    return response;
   }
 
   async findAll() {
