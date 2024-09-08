@@ -5,9 +5,16 @@ import { PrismaService } from "src/database/prisma.service";
 import { AuthJwtService } from "src/jwt/auth.jwt.service";
 import { PublicModule } from "./public/public.module";
 import { PublicService } from "./public/public.service";
+import ListAllStoreService from "./service/list-all-store.service";
 
 @Module({
-  providers: [StoreService, PrismaService, AuthJwtService, PublicService],
+  providers: [
+    StoreService,
+    PrismaService,
+    AuthJwtService,
+    PublicService,
+    ListAllStoreService,
+  ],
   controllers: [StoreController],
   exports: [StoreService],
   imports: [PublicModule],

@@ -1,6 +1,6 @@
 import { NestFactory } from "@nestjs/core";
 import { AppModule } from "./app.module";
-import { Logger } from "@nestjs/common";
+import { Logger, ValidationPipe } from "@nestjs/common";
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -10,6 +10,9 @@ async function bootstrap() {
   });
 
   const PORT = process.env.PORT || 4200;
+
+  app.useGlobalPipes(new ValidationPipe());
+
   await app.listen(PORT);
 
   new Logger().log(`Server is Running: ${PORT}`, "SERVER");

@@ -10,19 +10,27 @@ import {
 import { IProduct, IStoreConfig, StoreService } from "./store.service";
 import { JwtAuthGuard } from "src/jwt/auth.guard.service";
 import { Roles, RolesGuard } from "src/database/role.service";
+import ListAllStoreService from "./service/list-all-store.service";
 
 @Controller("/store")
+@Roles("admin")
 @UseGuards(JwtAuthGuard, RolesGuard)
 export class StoreController {
-  constructor(private readonly storeService: StoreService) {}
+  constructor(
+    private readonly storeService: StoreService,
+    private readonly listAllStoreService: ListAllStoreService,
+  ) {}
 
-  @Roles("admin")
+  @Get("/")
+  async listAll() {
+    return await this.listAllStoreService.all();
+  }
+
   @Get("/search_store")
   async searchStore(@Query() query: { storeName: string }) {
     return this.storeService.getStoreByName(query);
   }
 
-  @Roles("admin")
   @Post("/create/store")
   async createAndAssociateConfig(
     @Body() body: { name: string; store_config: IStoreConfig },
@@ -30,7 +38,6 @@ export class StoreController {
     return this.storeService.createStoreAndConfig(body);
   }
 
-  @Roles("admin")
   @Post("/create/categories")
   async createAndAssociateCategories(
     @Body()
@@ -42,7 +49,6 @@ export class StoreController {
     return this.storeService.createAndAssociateCategoriesToStore(body);
   }
 
-  @Roles("admin")
   @Post("/create/product")
   async createAndAssociateProduct(
     @Body()
@@ -54,7 +60,6 @@ export class StoreController {
     return this.storeService.createAndAssociateProductToStore(body);
   }
 
-  @Roles("admin")
   @Post("/create/featured-products")
   async createFeaturedProduct(
     @Body()
@@ -66,7 +71,6 @@ export class StoreController {
     return this.storeService.createAndAssociateFeaturedProducts(body);
   }
 
-  @Roles("admin")
   @Delete("/delete/store")
   async deleteStore(
     @Body()
