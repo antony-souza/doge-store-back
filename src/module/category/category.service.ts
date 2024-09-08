@@ -35,15 +35,22 @@ export class CategoryService {
     });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} category`;
+  async update(id: string, updateCategoryDto: UpdateCategoryDto) {
+    return await this.prismaService.category.update({
+      where: {
+        id,
+      },
+      data: {
+        ...updateCategoryDto,
+      },
+    });
   }
 
-  update(id: number, updateCategoryDto: UpdateCategoryDto) {
-    return `This action updates a #${id} category`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} category`;
+  async remove(id: string) {
+    return await this.prismaService.category.delete({
+      where: {
+        id,
+      },
+    });
   }
 }

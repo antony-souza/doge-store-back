@@ -6,11 +6,14 @@ import {
   UseGuards,
   Get,
   Query,
+  UseInterceptors,
+  UploadedFile,
 } from "@nestjs/common";
 import { IProduct, IStoreConfig, StoreService } from "./store.service";
 import { JwtAuthGuard } from "src/jwt/auth.guard.service";
 import { Roles, RolesGuard } from "src/database/role.service";
 import ListAllStoreService from "./service/list-all-store.service";
+import { FileInterceptor } from "@nestjs/platform-express";
 
 @Controller("/store")
 @Roles("admin")
@@ -36,6 +39,15 @@ export class StoreController {
     @Body() body: { name: string; store_config: IStoreConfig },
   ) {
     return this.storeService.createStoreAndConfig(body);
+  }
+
+  @Post("/upload_logo")
+  @UseInterceptors(FileInterceptor("upload_file"))
+  async upload_logo(
+    @Body() body: { storeConfigId: string },
+    @UploadedFile() upload_file: Express.Multer.File,
+  ) {
+    return await this.storeService.uploadLogo(body.storeConfigId, upload_file);
   }
 
   @Post("/create/categories")

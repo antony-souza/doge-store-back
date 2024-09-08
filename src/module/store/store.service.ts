@@ -1,10 +1,12 @@
 import {
+  BadRequestException,
   ConflictException,
   Injectable,
   InternalServerErrorException,
   NotFoundException,
 } from "@nestjs/common";
 import { PrismaService } from "src/database/prisma.service";
+import UploadFileService from "src/util/upload-file.service";
 
 export interface IStoreConfig {
   id: string;
@@ -26,11 +28,16 @@ export interface IProduct {
 
 @Injectable()
 export class StoreService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly uploadFilService: UploadFileService,
+  ) {}
 
   /* Searchs Public(FrontHome) And Private(DogeAdmin)*/
   async getStoreByName(query: { storeName: string }) {
     const { storeName } = query;
+
+    console.log(storeName);
 
     const store = await this.prisma.store.findMany({
       where: { name: { equals: storeName, mode: "insensitive" } },
@@ -309,5 +316,28 @@ export class StoreService {
     return {
       message: "Store and all related data deleted successfully",
     };
+  }
+
+  async uploadLogo(storeConfigId: string, file: Express.Multer.File) {
+    const checkIfExistStoreConfigId = await this.prisma.storeConfig.count({
+      where: {
+        id: storeConfigId ?? "",
+      },
+    });
+
+    if (!checkIfExistStoreConfigId) {
+      throw new BadRequestException("storeConfigId not found");
+    }
+
+    const url = await this.uploadFilService.upload(file);
+
+    return await this.prisma.storeConfig.update({
+      where: {
+        id: storeConfigId,
+      },
+      data: {
+        image_url: url,
+      },
+    });
   }
 }

@@ -6,6 +6,7 @@ import { UserModule } from "./module/user/user.module";
 import { JwtModule } from "@nestjs/jwt";
 import { AuthModule } from "./module/auth/auth.module";
 import { CategoryModule } from "./module/category/category.module";
+import { ProductModule } from "./module/product/product.module";
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { CategoryModule } from "./module/category/category.module";
     JwtModule,
     AuthModule,
     CategoryModule,
+    ProductModule,
     ConfigModule.forRoot({
       isGlobal: true,
     }),

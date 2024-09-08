@@ -6,6 +6,7 @@ import { AuthJwtService } from "src/jwt/auth.jwt.service";
 import { PublicModule } from "./public/public.module";
 import { PublicService } from "./public/public.service";
 import ListAllStoreService from "./service/list-all-store.service";
+import UploadFileService from "src/util/upload-file.service";
 
 @Module({
   providers: [
@@ -14,6 +15,7 @@ import ListAllStoreService from "./service/list-all-store.service";
     AuthJwtService,
     PublicService,
     ListAllStoreService,
+    UploadFileService,
   ],
   controllers: [StoreController],
   exports: [StoreService],
