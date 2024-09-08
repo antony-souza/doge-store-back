@@ -8,6 +8,7 @@ import {
   Delete,
   UseGuards,
   UseInterceptors,
+  UploadedFile,
 } from "@nestjs/common";
 import { CategoryService } from "./category.service";
 import { CreateCategoryDto } from "./dto/create-category.dto";
@@ -23,10 +24,15 @@ export class CategoryController {
   constructor(private readonly categoryService: CategoryService) {}
 
   @Post()
-  @UseInterceptors(FileInterceptor("file"))
-  create(@Body() createCategoryDto: CreateCategoryDto) {
-    console.log("opk?");
-    return this.categoryService.create(createCategoryDto);
+  @UseInterceptors(FileInterceptor("upload_file"))
+  create(
+    @Body() createCategoryDto: CreateCategoryDto,
+    @UploadedFile() upload_file: Express.Multer.File,
+  ) {
+    return this.categoryService.create({
+      name: createCategoryDto.name,
+      upload_file: upload_file,
+    });
   }
 
   @Get()

@@ -23,6 +23,7 @@
     "init-user": "ts-node init-user-admin.ts"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.645.0",
     "@nestjs/class-transformer": "^0.4.0",
     "@nestjs/common": "^10.0.0",
     "@nestjs/config": "^3.2.3",
@@ -32,6 +33,7 @@
     "@nestjs/passport": "^10.0.3",
     "@nestjs/platform-express": "^10.0.0",
     "@prisma/client": "^5.19.0",
+    "aws-sdk": "^2.1691.0",
     "bcrypt": "^5.1.1",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.1",
