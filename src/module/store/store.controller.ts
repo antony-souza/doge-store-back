@@ -7,71 +7,39 @@ import {
   Get,
   Query,
   UseInterceptors,
-  UploadedFile,
 } from "@nestjs/common";
-import { IProduct, IStoreConfig, StoreService } from "./store.service";
+import { StoreService } from "./store.service";
 import { JwtAuthGuard } from "src/jwt/auth.guard.service";
 import { Roles, RolesGuard } from "src/database/role.service";
-import ListAllStoreService from "./service/list-all-store.service";
+import { CreateStoreDto } from "./Dtos/create-store.dto";
+import { CreateStoreConfigDto } from "./Dtos/create-store-cofig.dto";
 import { FileInterceptor } from "@nestjs/platform-express";
 
 @Controller("/store")
-@Roles("admin")
 @UseGuards(JwtAuthGuard, RolesGuard)
 export class StoreController {
-  constructor(
-    private readonly storeService: StoreService,
-    private readonly listAllStoreService: ListAllStoreService,
-  ) {}
+  constructor(private readonly storeService: StoreService) {}
 
-  @Get("/")
-  async listAll() {
-    return await this.listAllStoreService.all();
-  }
-
+  @Roles("admin")
   @Get("/search_store")
   async searchStore(@Query() query: { storeName: string }) {
     return this.storeService.getStoreByName(query);
   }
 
+  @Roles("admin")
+  @UseInterceptors(FileInterceptor("upload_file"))
   @Post("/create/store")
   async createAndAssociateConfig(
-    @Body() body: { name: string; store_config: IStoreConfig },
+    @Body() createStoreDto: CreateStoreDto,
+    @Body() createStoreConfigDto: CreateStoreConfigDto,
   ) {
-    return this.storeService.createStoreAndConfig(body);
+    return this.storeService.createStoreAndConfig(
+      createStoreDto,
+      createStoreConfigDto,
+    );
   }
 
-  @Post("/upload_logo")
-  @UseInterceptors(FileInterceptor("upload_file"))
-  async upload_logo(
-    @Body() body: { storeConfigId: string },
-    @UploadedFile() upload_file: Express.Multer.File,
-  ) {
-    return await this.storeService.uploadLogo(body.storeConfigId, upload_file);
-  }
-
-  @Post("/create/categories")
-  async createAndAssociateCategories(
-    @Body()
-    body: {
-      storeId: string;
-      categories: { name: string; image_url: string[]; border_color: string }[];
-    },
-  ) {
-    return this.storeService.createAndAssociateCategoriesToStore(body);
-  }
-
-  @Post("/create/product")
-  async createAndAssociateProduct(
-    @Body()
-    body: {
-      store_id: string;
-      products: IProduct[];
-    },
-  ) {
-    return this.storeService.createAndAssociateProductToStore(body);
-  }
-
+  /*  @Roles("admin")
   @Post("/create/featured-products")
   async createFeaturedProduct(
     @Body()
@@ -81,16 +49,12 @@ export class StoreController {
     },
   ) {
     return this.storeService.createAndAssociateFeaturedProducts(body);
-  }
+  } */
 
+  @Roles("admin")
   @Delete("/delete/store")
-  async deleteStore(
-    @Body()
-    body: {
-      store_id: string;
-    },
-  ) {
-    return this.storeService.deleteStoreAndRelationships(body);
+  async deleteStore(@Body() createStoreDto: CreateStoreDto) {
+    return this.storeService.deleteStoreAndRelationships(createStoreDto);
   }
 
   /* @Delete("/delete/all/store-configs")

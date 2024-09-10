@@ -2,7 +2,6 @@
 
 import { Logger, OnModuleDestroy, OnModuleInit } from "@nestjs/common";
 import { PrismaClient, User } from "@prisma/client";
-import GeneratePasswordService from "src/util/generate-password.service";
 import * as bcrypt from "bcrypt";
 
 export class PrismaInitialService
