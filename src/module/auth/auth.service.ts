@@ -3,6 +3,7 @@ import { User } from "@prisma/client";
 import { PrismaService } from "src/database/prisma.service";
 import { AuthJwtService } from "src/jwt/auth.jwt.service";
 import * as bcrypt from "bcrypt";
+import { CreateAuthDto } from "./Dto/crerate.auth.dto";
 
 @Injectable()
 export class AuthService {
@@ -10,14 +11,12 @@ export class AuthService {
     private readonly prisma: PrismaService,
     private readonly AuthToken: AuthJwtService,
   ) {}
-  async authUser(body: { email: string; password: string }) {
-    const { email, password } = body;
-
+  async authUser(auth: CreateAuthDto) {
     const user = await this.prisma.user.findFirst({
-      where: { email },
+      where: { email: auth.email },
     });
 
-    if (!user || !(await bcrypt.compare(password, user.password))) {
+    if (!user || !(await bcrypt.compare(auth.password, user.password))) {
       throw new ConflictException("Invalid email or password");
     }
     const token = this.AuthToken.generateToken(user);
