@@ -1,3 +1,4 @@
+import { Role } from "@prisma/client";
 import {
   IsEmail,
   IsNotEmpty,
@@ -28,5 +29,5 @@ export class CreateUserDto {
 
   @IsNotEmpty()
   @IsString()
-  role: string;
+  role: Role;
 }

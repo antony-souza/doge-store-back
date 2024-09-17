@@ -15,7 +15,14 @@ export class UserService {
 
   async findAll() {
     try {
-      return await this.prisma.user.findMany();
+      return await this.prisma.user.findMany({
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          role: true,
+        },
+      });
     } catch (error) {
       throw new ConflictException(error.message);
     }
@@ -63,12 +70,16 @@ export class UserService {
         throw new ConflictException("User does not exist");
       }
 
+      const hashPassword = await this.generatePasswordService.createHash(
+        user.password,
+      );
       const updateUser = await this.prisma.user.update({
         where: { id: user.id },
         data: {
           name: user.name,
           email: user.email,
-          role: user.role as Role,
+          password: hashPassword,
+          role: user.role,
         },
       });
 
