@@ -12,7 +12,6 @@ import { StoreService } from "./store.service";
 import { JwtAuthGuard } from "src/jwt/auth.guard.service";
 import { Roles, RolesGuard } from "src/database/role.service";
 import { CreateStoreDto } from "./Dtos/create-store.dto";
-import { CreateStoreConfigDto } from "./Dtos/create-store-cofig.dto";
 import { FileInterceptor } from "@nestjs/platform-express";
 
 @Controller("/store")
@@ -29,14 +28,8 @@ export class StoreController {
   @Roles("admin")
   @UseInterceptors(FileInterceptor("upload_file"))
   @Post("/create/store")
-  async createAndAssociateConfig(
-    @Body() createStoreDto: CreateStoreDto,
-    @Body() createStoreConfigDto: CreateStoreConfigDto,
-  ) {
-    return this.storeService.createStoreAndConfig(
-      createStoreDto,
-      createStoreConfigDto,
-    );
+  async createAndAssociateConfig(@Body() createStoreDto: CreateStoreDto) {
+    return this.storeService.createStore(createStoreDto);
   }
 
   /*  @Roles("admin")

@@ -7,7 +7,6 @@ import {
 import { PrismaService } from "src/database/prisma.service";
 import UploadFileService from "src/util/upload-file.service";
 import { CreateStoreDto } from "./Dtos/create-store.dto";
-import { CreateStoreConfigDto } from "./Dtos/create-store-cofig.dto";
 
 @Injectable()
 export class StoreService {
@@ -25,18 +24,6 @@ export class StoreService {
     const store = await this.prisma.store.findMany({
       where: { name: { equals: storeName, mode: "insensitive" } },
       include: {
-        store_config: {
-          select: {
-            id: true,
-            name: true,
-            phone: true,
-            address: true,
-            description: true,
-            is_open: true,
-            image_url: true,
-            background_color: true,
-          },
-        },
         category: {
           select: {
             id: true,
@@ -79,64 +66,37 @@ export class StoreService {
     return store;
   }
 
-  async createStoreAndConfig(
-    createStoreDto: CreateStoreDto,
-    createStoreConfigDto: CreateStoreConfigDto,
-  ) {
-    // Executa ambas as contagens(buscas) em paralelo
-    const [checkIfExistStore, checkIfExistStoreConfig] = await Promise.all([
-      this.prisma.store.count({
-        where: {
-          name: createStoreDto.name,
-        },
-      }),
-      this.prisma.storeConfig.count({
-        where: {
-          name: createStoreConfigDto.name,
-        },
-      }),
-    ]);
-
-    if (checkIfExistStore > 0) {
-      throw new ConflictException("Store Already Created");
-    }
-    if (checkIfExistStoreConfig > 0) {
-      throw new ConflictException("StoreConfig Already Created");
-    }
-
-    let url = "";
-
-    if (createStoreConfigDto.upload_file) {
-      // Faz o upload da foto, se fornecido
-      url = await this.uploadFilService.upload(
-        createStoreConfigDto.upload_file,
-      );
-    }
-
-    // Cria a loja e a configuração da loja
-    return await this.prisma.store.create({
-      data: {
-        name: createStoreDto.name,
-        store_config: {
-          create: {
-            name: createStoreConfigDto.name,
-            phone: createStoreConfigDto.phone,
-            address: createStoreConfigDto.address,
-            description: createStoreConfigDto.description,
-            is_open: createStoreConfigDto.is_open,
-            background_color: createStoreConfigDto.background_color,
-            image_url: url,
-          },
-        },
+  async createStore(createStoreDto: CreateStoreDto) {
+    const existingStore = await this.prisma.store.count({
+      where: {
+        name: createStoreDto.id,
       },
     });
+    if (existingStore) {
+      throw new ConflictException("Store already exists");
+    }
+
+    const createdStore = await this.prisma.store.create({
+      data: {
+        name: createStoreDto.name,
+        phone: createStoreDto.phone,
+        address: createStoreDto.address,
+        description: createStoreDto.description,
+        is_open: createStoreDto.is_open,
+        background_color: createStoreDto.background_color,
+        image_url: createStoreDto.upload_file.path,
+      },
+    });
+    return {
+      message: "Store created successfully",
+      data: createdStore,
+    };
   }
 
   async deleteStoreAndRelationships(createStoreDto: CreateStoreDto) {
     const store = await this.prisma.store.findUnique({
       where: { id: createStoreDto.id },
       include: {
-        store_config: true,
         category: true,
         product: true,
         ProductAndAddtionalDishe: true,
@@ -156,10 +116,10 @@ export class StoreService {
     };
   }
 
-  async uploadLogo(storeConfigId: string, file: Express.Multer.File) {
-    const checkIfExistStoreConfigId = await this.prisma.storeConfig.count({
+  async uploadLogo(store: CreateStoreDto, file: Express.Multer.File) {
+    const checkIfExistStoreConfigId = await this.prisma.store.count({
       where: {
-        id: storeConfigId ?? "",
+        id: store.id ?? "",
       },
     });
 
@@ -169,9 +129,9 @@ export class StoreService {
 
     const url = await this.uploadFilService.upload(file);
 
-    return await this.prisma.storeConfig.update({
+    return await this.prisma.store.update({
       where: {
-        id: storeConfigId,
+        id: store.id,
       },
       data: {
         image_url: url,

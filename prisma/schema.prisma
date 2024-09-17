@@ -22,32 +22,20 @@ model User {
 model Store {
   id                       String                     @id @default(uuid())
   name                     String
+  phone                    String
+  address                  String
+  description              String
+  is_open                  Boolean                    @default(true)
+  image_url                String
+  background_color         String
   created_at               DateTime                   @default(now())
   updated_at               DateTime                   @default(now())
   category                 Category[]
   featured_products        FeaturedProducts[]
   product                  Product[]
   ProductAndAddtionalDishe ProductAndAddtionalDishe[]
-  store_config             StoreConfig[]
 
   @@map("store")
-}
-
-model StoreConfig {
-  id               String   @id @default(uuid())
-  name             String
-  phone            String
-  address          String
-  description      String
-  is_open          Boolean  @default(true)
-  image_url        String
-  background_color String
-  created_at       DateTime @default(now())
-  updated_at       DateTime @default(now())
-  store_id         String
-  store            Store    @relation(fields: [store_id], references: [id])
-
-  @@map("store_config")
 }
 
 model Category {
