@@ -7,6 +7,7 @@ import {
   Get,
   Query,
   UseInterceptors,
+  Request,
 } from "@nestjs/common";
 import { StoreService } from "./store.service";
 import { JwtAuthGuard } from "src/jwt/auth.guard.service";
@@ -19,6 +20,14 @@ import { FileInterceptor } from "@nestjs/platform-express";
 export class StoreController {
   constructor(private readonly storeService: StoreService) {}
 
+  @Roles("admin", "user")
+  @Get("/store-client")
+  async getStoreClient(@Request() req) {
+    const store_id: string = req.user.store_id;
+
+    return this.storeService.getStoreClient(store_id);
+  }
+
   @Roles("admin")
   @Get("/search_store")
   async searchStore(@Query() query: { storeName: string }) {
@@ -28,7 +37,7 @@ export class StoreController {
   @Roles("admin")
   @UseInterceptors(FileInterceptor("upload_file"))
   @Post("/create/store")
-  async createAndAssociateConfig(@Body() createStoreDto: CreateStoreDto) {
+  async createStore(@Body() createStoreDto: CreateStoreDto) {
     return this.storeService.createStore(createStoreDto);
   }
 

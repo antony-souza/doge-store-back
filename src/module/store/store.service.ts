@@ -15,6 +15,45 @@ export class StoreService {
     private readonly uploadFilService: UploadFileService,
   ) {}
 
+  //Mapear os dados do store na interface do client
+  async getStoreClient(store_id: string) {
+    const existingStore = await this.prisma.store.count({
+      where: {
+        id: store_id,
+      },
+    });
+
+    if (existingStore === 0) {
+      throw new NotFoundException("Store not found");
+    }
+
+    const storeData = await this.prisma.store.findUnique({
+      where: {
+        id: store_id,
+      },
+      select: {
+        id: true,
+        name: true,
+        phone: true,
+        is_open: true,
+        address: true,
+        image_url: true,
+        description: true,
+        background_color: true,
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            role: true,
+          },
+        },
+      },
+    });
+
+    return storeData;
+  }
+
   /* Searchs Public(FrontHome) And Private(DogeAdmin)*/
   async getStoreByName(query: { storeName: CreateStoreDto["name"] }) {
     const { storeName } = query;
@@ -69,9 +108,10 @@ export class StoreService {
   async createStore(createStoreDto: CreateStoreDto) {
     const existingStore = await this.prisma.store.count({
       where: {
-        name: createStoreDto.id,
+        name: createStoreDto.name,
       },
     });
+
     if (existingStore) {
       throw new ConflictException("Store already exists");
     }
@@ -84,9 +124,25 @@ export class StoreService {
         description: createStoreDto.description,
         is_open: createStoreDto.is_open,
         background_color: createStoreDto.background_color,
-        image_url: createStoreDto.upload_file.path,
+        image_url: createStoreDto.image_url,
+        user: {
+          connect: {
+            id: createStoreDto.user_id,
+          },
+        },
+      },
+      include: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            role: true,
+          },
+        },
       },
     });
+
     return {
       message: "Store created successfully",
       data: createdStore,

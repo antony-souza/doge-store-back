@@ -15,7 +15,7 @@ export class UserService {
 
   async findAll() {
     try {
-      return await this.prisma.user.findMany({
+      return await this.prisma.users.findMany({
         select: {
           id: true,
           name: true,
@@ -30,7 +30,7 @@ export class UserService {
 
   async createUser(createUserDto: CreateUserDto) {
     try {
-      const existingUser = await this.prisma.user.findFirst({
+      const existingUser = await this.prisma.users.findFirst({
         where: { email: createUserDto.email },
       });
 
@@ -42,7 +42,7 @@ export class UserService {
         createUserDto.password,
       );
 
-      const createUser = await this.prisma.user.create({
+      const createUser = await this.prisma.users.create({
         data: {
           name: createUserDto.name,
           email: createUserDto.email,
@@ -62,7 +62,7 @@ export class UserService {
 
   async update(user: UpdateUserDto) {
     try {
-      const existingUser = await this.prisma.user.count({
+      const existingUser = await this.prisma.users.count({
         where: { id: user.id },
       });
 
@@ -73,7 +73,7 @@ export class UserService {
       const hashPassword = await this.generatePasswordService.createHash(
         user.password,
       );
-      const updateUser = await this.prisma.user.update({
+      const updateUser = await this.prisma.users.update({
         where: { id: user.id },
         data: {
           name: user.name,
@@ -94,7 +94,7 @@ export class UserService {
 
   async delete(user: UpdateUserDto) {
     try {
-      const existingUser = await this.prisma.user.count({
+      const existingUser = await this.prisma.users.count({
         where: { id: user.id },
       });
 
@@ -102,7 +102,7 @@ export class UserService {
         throw new ConflictException("User does not exist");
       }
 
-      const deleteUser = await this.prisma.user.delete({
+      const deleteUser = await this.prisma.users.delete({
         where: { id: user.id },
       });
 

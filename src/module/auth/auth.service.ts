@@ -1,9 +1,9 @@
 import { ConflictException, Injectable } from "@nestjs/common";
-import { User } from "@prisma/client";
 import { PrismaService } from "src/database/prisma.service";
 import { AuthJwtService } from "src/jwt/auth.jwt.service";
 import * as bcrypt from "bcrypt";
 import { CreateAuthDto } from "./Dto/crerate.auth.dto";
+import { Users } from "@prisma/client";
 
 @Injectable()
 export class AuthService {
@@ -12,7 +12,7 @@ export class AuthService {
     private readonly AuthToken: AuthJwtService,
   ) {}
   async authUser(auth: CreateAuthDto) {
-    const user = await this.prisma.user.findFirst({
+    const user = await this.prisma.users.findFirst({
       where: { email: auth.email },
     });
 
@@ -26,9 +26,9 @@ export class AuthService {
       message: "User authenticated successfully!",
     };
   }
-  async validateToken(token: string): Promise<User> {
+  async validateToken(token: string): Promise<Users> {
     const payload = this.AuthToken.verifyToken(token);
-    const user = await this.prisma.user.findUnique({
+    const user = await this.prisma.users.findUnique({
       where: { id: payload.id },
     });
     return user;

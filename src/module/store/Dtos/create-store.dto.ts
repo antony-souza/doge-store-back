@@ -35,5 +35,13 @@ export class CreateStoreDto {
   @IsString()
   background_color: string;
 
+  @IsString()
+  @IsNotEmpty()
+  image_url: string;
+
+  @IsString()
+  @IsNotEmpty()
+  user_id: string;
+
   upload_file: Express.Multer.File;
 }
