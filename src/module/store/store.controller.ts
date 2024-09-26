@@ -8,20 +8,25 @@ import {
   Query,
   UseInterceptors,
   Request,
+  UploadedFile,
 } from "@nestjs/common";
 import { StoreService } from "./store.service";
 import { JwtAuthGuard } from "src/jwt/auth.guard.service";
 import { Roles, RolesGuard } from "src/database/role.service";
 import { CreateStoreDto } from "./Dtos/create-store.dto";
 import { FileInterceptor } from "@nestjs/platform-express";
+import { ImgurUploadService } from "src/util/imgur-upload.service";
 
 @Controller("/store")
 @UseGuards(JwtAuthGuard, RolesGuard)
 export class StoreController {
-  constructor(private readonly storeService: StoreService) {}
+  constructor(
+    private readonly storeService: StoreService,
+    private readonly imgurUploadService: ImgurUploadService,
+  ) {}
 
   @Roles("admin", "user")
-  @Get("/store-client")
+  @Get("/store-client/:id")
   async getStoreClient(@Request() req) {
     const store_id: string = req.user.store_id;
 
@@ -30,14 +35,28 @@ export class StoreController {
 
   @Roles("admin")
   @Get("/search_store")
-  async searchStore(@Query() query: { storeName: string }) {
+  async searchStore(@Query() query: { name: string }) {
     return this.storeService.getStoreByName(query);
   }
 
   @Roles("admin")
-  @UseInterceptors(FileInterceptor("upload_file"))
   @Post("/create/store")
-  async createStore(@Body() createStoreDto: CreateStoreDto) {
+  @UseInterceptors(FileInterceptor("upload_file")) // Certifique-se de que o nome aqui é o mesmo do Postman
+  async createStore(
+    @UploadedFile() upload_file: Express.Multer.File,
+    @Body() createStoreDto: CreateStoreDto,
+  ) {
+    if (!upload_file) {
+      throw new Error("No file provided for upload."); // Verifique se o arquivo foi enviado
+    }
+
+    // Faz o upload da imagem para o Imgur
+    const imageUrl = await this.imgurUploadService.uploadImage(upload_file);
+
+    // Atualiza a URL da imagem no DTO
+    createStoreDto.image_url = imageUrl;
+
+    // Salva a loja no banco de dados
     return this.storeService.createStore(createStoreDto);
   }
 

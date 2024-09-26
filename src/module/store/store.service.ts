@@ -7,12 +7,14 @@ import {
 import { PrismaService } from "src/database/prisma.service";
 import UploadFileService from "src/util/upload-file.service";
 import { CreateStoreDto } from "./Dtos/create-store.dto";
+import { ImgurUploadService } from "src/util/imgur-upload.service";
 
 @Injectable()
 export class StoreService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly uploadFilService: UploadFileService,
+    private readonly imgurFileUpload: ImgurUploadService,
   ) {}
 
   //Mapear os dados do store na interface do client
@@ -55,13 +57,23 @@ export class StoreService {
   }
 
   /* Searchs Public(FrontHome) And Private(DogeAdmin)*/
-  async getStoreByName(query: { storeName: CreateStoreDto["name"] }) {
-    const { storeName } = query;
+  async getStoreByName(query: { name: string }) {
+    const { name } = query;
 
-    console.log(storeName);
+    console.log(name);
+
+    const existingStore = await this.prisma.store.count({
+      where: {
+        name: name,
+      },
+    });
+
+    if (existingStore === 0) {
+      throw new NotFoundException("Store not found");
+    }
 
     const store = await this.prisma.store.findMany({
-      where: { name: { equals: storeName, mode: "insensitive" } },
+      where: { name: { equals: name, mode: "insensitive" } },
       include: {
         category: {
           select: {
@@ -102,10 +114,12 @@ export class StoreService {
       throw new NotFoundException("Store not found");
     }
 
+    console.log(store);
     return store;
   }
 
   async createStore(createStoreDto: CreateStoreDto) {
+    const { upload_file } = createStoreDto;
     const existingStore = await this.prisma.store.count({
       where: {
         name: createStoreDto.name,
@@ -116,6 +130,8 @@ export class StoreService {
       throw new ConflictException("Store already exists");
     }
 
+    const url = await this.uploadFilService.upload(upload_file);
+
     const createdStore = await this.prisma.store.create({
       data: {
         name: createStoreDto.name,
@@ -124,7 +140,7 @@ export class StoreService {
         description: createStoreDto.description,
         is_open: createStoreDto.is_open,
         background_color: createStoreDto.background_color,
-        image_url: createStoreDto.image_url,
+        image_url: url,
         user: {
           connect: {
             id: createStoreDto.user_id,

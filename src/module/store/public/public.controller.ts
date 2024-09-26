@@ -5,8 +5,8 @@ import { PublicService } from "./public.service";
 export class PublicController {
   constructor(private readonly store: PublicService) {}
 
-  @Get("/search_store")
-  async searchStore(@Query() query: { storeName: string }) {
+  @Get("/search_store/")
+  async searchStore(@Query() query: { name: string }) {
     return this.store.getStoreByName(query);
   }
 }

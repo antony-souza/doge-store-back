@@ -36,7 +36,7 @@ export class CreateStoreDto {
   background_color: string;
 
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   image_url: string;
 
   @IsString()

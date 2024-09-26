@@ -6,6 +6,7 @@ import { AuthJwtService } from "src/jwt/auth.jwt.service";
 import { PublicModule } from "./public/public.module";
 import { PublicService } from "./public/public.service";
 import UploadFileService from "src/util/upload-file.service";
+import { ImgurUploadService } from "src/util/imgur-upload.service";
 
 @Module({
   providers: [
@@ -14,6 +15,7 @@ import UploadFileService from "src/util/upload-file.service";
     AuthJwtService,
     PublicService,
     UploadFileService,
+    ImgurUploadService,
   ],
   controllers: [StoreController],
   exports: [StoreService],
