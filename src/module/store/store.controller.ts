@@ -41,23 +41,15 @@ export class StoreController {
 
   @Roles("admin")
   @Post("/create/store")
-  @UseInterceptors(FileInterceptor("upload_file")) // Certifique-se de que o nome aqui é o mesmo do Postman
+  @UseInterceptors(FileInterceptor("upload_file"))
   async createStore(
     @UploadedFile() upload_file: Express.Multer.File,
     @Body() createStoreDto: CreateStoreDto,
   ) {
-    if (!upload_file) {
-      throw new Error("No file provided for upload."); // Verifique se o arquivo foi enviado
-    }
-
-    // Faz o upload da imagem para o Imgur
-    const imageUrl = await this.imgurUploadService.uploadImage(upload_file);
-
-    // Atualiza a URL da imagem no DTO
-    createStoreDto.image_url = imageUrl;
-
-    // Salva a loja no banco de dados
-    return this.storeService.createStore(createStoreDto);
+    return this.storeService.createStore({
+      ...createStoreDto,
+      upload_file: upload_file,
+    });
   }
 
   /*  @Roles("admin")

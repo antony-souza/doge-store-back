@@ -19,7 +19,7 @@ export class ImgurUploadService {
     const formdata = new FormData();
     formdata.append("image", file.buffer, file.originalname);
     formdata.append("type", "file");
-    formdata.append("title", "Image Upload");
+    formdata.append("title", "Doge Store - Images");
     formdata.append("description", "Uploaded via API");
 
     const requestOptions = {

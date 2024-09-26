@@ -119,7 +119,6 @@ export class StoreService {
   }
 
   async createStore(createStoreDto: CreateStoreDto) {
-    const { upload_file } = createStoreDto;
     const existingStore = await this.prisma.store.count({
       where: {
         name: createStoreDto.name,
@@ -130,7 +129,9 @@ export class StoreService {
       throw new ConflictException("Store already exists");
     }
 
-    const url = await this.uploadFilService.upload(upload_file);
+    const url = await this.imgurFileUpload.uploadImage(
+      createStoreDto.upload_file,
+    );
 
     const createdStore = await this.prisma.store.create({
       data: {

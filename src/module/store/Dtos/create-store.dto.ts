@@ -36,10 +36,6 @@ export class CreateStoreDto {
   background_color: string;
 
   @IsString()
-  @IsOptional()
-  image_url: string;
-
-  @IsString()
   @IsNotEmpty()
   user_id: string;
 
