@@ -8,8 +8,6 @@ export class ImgurUploadService implements IUploadFactoryService {
   private clientId: string = process.env.IMGUR_ID;
 
   async upload(file: Express.Multer.File): Promise<string> {
-    console.log("Imgur Client ID:", this.clientId);
-
     if (!file) {
       throw new Error("No file provided for upload.");
     }
@@ -31,7 +29,6 @@ export class ImgurUploadService implements IUploadFactoryService {
     };
 
     try {
-      console.log("Sending image upload request to Imgur...");
       const response = await fetch(
         "https://api.imgur.com/3/image",
         requestOptions,
@@ -41,14 +38,10 @@ export class ImgurUploadService implements IUploadFactoryService {
       console.log("Imgur response:", result);
 
       if (!response.ok) {
-        console.error("Error uploading image:", result.data.error);
         throw new Error(result.data.error);
       }
-
-      console.log("Image uploaded successfully. Link:", result.data.link);
-      return result.data.link; // Retorna o link da imagem
+      return result.data.link;
     } catch (error) {
-      console.error("Failed to upload image to Imgur:", error.message);
       throw new Error("Failed to upload image to Imgur: " + error.message);
     }
   }
