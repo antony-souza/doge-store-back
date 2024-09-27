@@ -30,7 +30,7 @@ async function main() {
     role: "admin",
     id: "1",
     password: "",
-    image_url: "",
+    image_url: "https://i.imgur.com/9NafuhL.jpeg",
     store_id: undefined,
     created_at: undefined,
     updated_at: undefined,
