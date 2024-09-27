@@ -3,8 +3,8 @@ import { PublicService } from "./public.service";
 import { PublicController } from "./public.controller";
 import { PrismaService } from "src/database/prisma.service";
 import { StoreService } from "../store.service";
-import UploadFileService from "src/util/upload-file.service";
-import { ImgurUploadService } from "src/util/imgur-upload.service";
+import UploadFileFactoryService from "src/util/upload-service/upload-file.service";
+import { ImgurUploadService } from "src/util/upload-service/imgur-upload.service";
 
 @Module({
   controllers: [PublicController],
@@ -12,7 +12,7 @@ import { ImgurUploadService } from "src/util/imgur-upload.service";
     PublicService,
     PrismaService,
     StoreService,
-    UploadFileService,
+    UploadFileFactoryService,
     ImgurUploadService,
   ],
   imports: [],

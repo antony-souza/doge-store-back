@@ -6,7 +6,7 @@ import { PrismaClient } from "@prisma/client";
 import { PassportModule } from "@nestjs/passport";
 import { JwtModule } from "@nestjs/jwt";
 import { AuthJwtService } from "../../jwt/auth.jwt.service";
-import { ImgurUploadService } from "src/util/imgur-upload.service";
+import { ImgurUploadService } from "src/util/upload-service/imgur-upload.service";
 
 @Module({
   imports: [

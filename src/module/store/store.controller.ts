@@ -17,15 +17,11 @@ import { JwtAuthGuard } from "src/jwt/auth.guard.service";
 import { Roles, RolesGuard } from "src/database/role.service";
 import { CreateStoreDto } from "./Dtos/create-store.dto";
 import { FileInterceptor } from "@nestjs/platform-express";
-import { ImgurUploadService } from "src/util/imgur-upload.service";
 
 @Controller("/store")
 @UseGuards(JwtAuthGuard, RolesGuard)
 export class StoreController {
-  constructor(
-    private readonly storeService: StoreService,
-    private readonly imgurUploadService: ImgurUploadService,
-  ) {}
+  constructor(private readonly storeService: StoreService) {}
 
   @Roles("admin", "user")
   @Get("/store-client/:id")

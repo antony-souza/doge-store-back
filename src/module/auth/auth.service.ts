@@ -23,6 +23,11 @@ export class AuthService {
 
     return {
       token,
+      user: {
+        name: user.name,
+        imageUrl: user.image_url,
+        id: user.id,
+      },
       message: "User authenticated successfully!",
     };
   }

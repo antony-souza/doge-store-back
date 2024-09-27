@@ -3,11 +3,10 @@ import {
   PutObjectCommand,
   S3Client,
 } from "@aws-sdk/client-s3";
-import { Injectable } from "@nestjs/common";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+import { IUploadFactoryService } from "./upload-service.interface";
 
-@Injectable()
-export default class UploadFileService {
+export default class AwsUploadService implements IUploadFactoryService {
   private readonly AWS_S3_BUCKET = "duckdevivery";
   private readonly AWS_S3_REGION = "us-east-1";
   private readonly expiresIn = 99999;

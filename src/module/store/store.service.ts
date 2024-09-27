@@ -4,16 +4,14 @@ import {
   NotFoundException,
 } from "@nestjs/common";
 import { PrismaService } from "src/database/prisma.service";
-import UploadFileService from "src/util/upload-file.service";
 import { CreateStoreDto } from "./Dtos/create-store.dto";
-import { ImgurUploadService } from "src/util/imgur-upload.service";
+import UploadFileFactoryService from "src/util/upload-service/upload-file.service";
 
 @Injectable()
 export class StoreService {
   constructor(
     private readonly prisma: PrismaService,
-    private readonly uploadFilService: UploadFileService,
-    private readonly imgurFileUpload: ImgurUploadService,
+    private readonly uploadFilService: UploadFileFactoryService,
   ) {}
 
   //Mapear os dados do store na interface do client
@@ -129,7 +127,7 @@ export class StoreService {
     }
 
     let url = "";
-    url = await this.imgurFileUpload.uploadImage(createStoreDto.image_url);
+    url = await this.uploadFilService.upload(createStoreDto.image_url);
 
     const createdStore = await this.prisma.store.create({
       data: {
@@ -174,7 +172,7 @@ export class StoreService {
     }
 
     let url = "";
-    url = await this.imgurFileUpload.uploadImage(createStoreDto.image_url);
+    url = await this.uploadFilService.upload(createStoreDto.image_url);
 
     const updatedStore = await this.prisma.store.update({
       where: { id: createStoreDto.id },

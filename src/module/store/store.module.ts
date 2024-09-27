@@ -5,8 +5,7 @@ import { PrismaService } from "src/database/prisma.service";
 import { AuthJwtService } from "src/jwt/auth.jwt.service";
 import { PublicModule } from "./public/public.module";
 import { PublicService } from "./public/public.service";
-import UploadFileService from "src/util/upload-file.service";
-import { ImgurUploadService } from "src/util/imgur-upload.service";
+import UploadFileFactoryService from "src/util/upload-service/upload-file.service";
 
 @Module({
   providers: [
@@ -14,8 +13,7 @@ import { ImgurUploadService } from "src/util/imgur-upload.service";
     PrismaService,
     AuthJwtService,
     PublicService,
-    UploadFileService,
-    ImgurUploadService,
+    UploadFileFactoryService,
   ],
   controllers: [StoreController],
   exports: [StoreService],

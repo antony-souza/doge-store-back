@@ -4,7 +4,7 @@ import { PrismaService } from "src/database/prisma.service";
 import GeneratePasswordService from "src/util/generate-password.service";
 import { CreateUserDto } from "./Dtos/create.user.dto";
 import { UpdateUserDto } from "./Dtos/update.user.dto";
-import { ImgurUploadService } from "src/util/imgur-upload.service";
+import { ImgurUploadService } from "src/util/upload-service/imgur-upload.service";
 
 @Injectable()
 export class UserService {
@@ -48,7 +48,7 @@ export class UserService {
       );
 
       let url = "";
-      url = await this.imgurFileUpload.uploadImage(createUserDto.image_url);
+      url = await this.imgurFileUpload.upload(createUserDto.image_url);
       const createUser = await this.prisma.users.create({
         data: {
           name: createUserDto.name,
@@ -88,7 +88,7 @@ export class UserService {
 
       let newImg = "";
       if (user.image_url) {
-        newImg = await this.imgurFileUpload.uploadImage(user.image_url);
+        newImg = await this.imgurFileUpload.upload(user.image_url);
       }
 
       const updatedUser = await this.prisma.users.update({

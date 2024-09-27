@@ -1,12 +1,13 @@
 import { Injectable } from "@nestjs/common";
 import * as FormData from "form-data";
 import fetch from "node-fetch";
+import { IUploadFactoryService } from "./upload-service.interface";
 
 @Injectable()
-export class ImgurUploadService {
+export class ImgurUploadService implements IUploadFactoryService {
   private clientId: string = process.env.IMGUR_ID;
 
-  async uploadImage(file: Express.Multer.File): Promise<string> {
+  async upload(file: Express.Multer.File): Promise<string> {
     console.log("Imgur Client ID:", this.clientId);
 
     if (!file) {
