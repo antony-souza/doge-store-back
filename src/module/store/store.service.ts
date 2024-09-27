@@ -1,5 +1,4 @@
 import {
-  BadRequestException,
   ConflictException,
   Injectable,
   NotFoundException,
@@ -129,9 +128,8 @@ export class StoreService {
       throw new ConflictException("Store already exists");
     }
 
-    const url = await this.imgurFileUpload.uploadImage(
-      createStoreDto.upload_file,
-    );
+    let url = "";
+    url = await this.imgurFileUpload.uploadImage(createStoreDto.image_url);
 
     const createdStore = await this.prisma.store.create({
       data: {
@@ -166,6 +164,36 @@ export class StoreService {
     };
   }
 
+  async updateStore(createStoreDto: CreateStoreDto) {
+    const existingStore = await this.prisma.store.count({
+      where: { id: createStoreDto.id },
+    });
+
+    if (existingStore === 0) {
+      throw new NotFoundException("Store not found");
+    }
+
+    let url = "";
+    url = await this.imgurFileUpload.uploadImage(createStoreDto.image_url);
+
+    const updatedStore = await this.prisma.store.update({
+      where: { id: createStoreDto.id },
+      data: {
+        name: createStoreDto.name,
+        phone: createStoreDto.phone,
+        address: createStoreDto.address,
+        description: createStoreDto.description,
+        is_open: createStoreDto.is_open,
+        background_color: createStoreDto.background_color,
+        image_url: url,
+      },
+    });
+    return {
+      message: "Store updated successfully",
+      data: updatedStore,
+    };
+  }
+
   async deleteStoreAndRelationships(createStoreDto: CreateStoreDto) {
     const store = await this.prisma.store.findUnique({
       where: { id: createStoreDto.id },
@@ -187,28 +215,5 @@ export class StoreService {
     return {
       message: "Store and all related data deleted successfully",
     };
-  }
-
-  async uploadLogo(store: CreateStoreDto, file: Express.Multer.File) {
-    const checkIfExistStoreConfigId = await this.prisma.store.count({
-      where: {
-        id: store.id ?? "",
-      },
-    });
-
-    if (!checkIfExistStoreConfigId) {
-      throw new BadRequestException("storeConfigId not found");
-    }
-
-    const url = await this.uploadFilService.upload(file);
-
-    return await this.prisma.store.update({
-      where: {
-        id: store.id,
-      },
-      data: {
-        image_url: url,
-      },
-    });
   }
 }

@@ -39,5 +39,5 @@ export class CreateStoreDto {
   @IsNotEmpty()
   user_id: string;
 
-  upload_file: Express.Multer.File;
+  image_url: Express.Multer.File;
 }

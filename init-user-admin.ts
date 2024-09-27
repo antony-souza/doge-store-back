@@ -30,6 +30,7 @@ async function main() {
     role: "admin",
     id: "1",
     password: "",
+    image_url: "",
     store_id: undefined,
     created_at: undefined,
     updated_at: undefined,

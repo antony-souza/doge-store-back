@@ -13,6 +13,7 @@ model Users {
   email      String   @unique
   password   String
   role       Role     @default(user)
+  image_url  String   @default("")
   store_id   String?  @unique
   store      Store?   @relation(fields: [store_id], references: [id])
   created_at DateTime @default(now())

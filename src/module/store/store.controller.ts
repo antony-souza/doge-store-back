@@ -9,6 +9,8 @@ import {
   UseInterceptors,
   Request,
   UploadedFile,
+  Put,
+  Param,
 } from "@nestjs/common";
 import { StoreService } from "./store.service";
 import { JwtAuthGuard } from "src/jwt/auth.guard.service";
@@ -41,14 +43,29 @@ export class StoreController {
 
   @Roles("admin")
   @Post("/create/store")
-  @UseInterceptors(FileInterceptor("upload_file"))
+  @UseInterceptors(FileInterceptor("image_url"))
   async createStore(
     @UploadedFile() upload_file: Express.Multer.File,
     @Body() createStoreDto: CreateStoreDto,
   ) {
     return this.storeService.createStore({
       ...createStoreDto,
-      upload_file: upload_file,
+      image_url: upload_file,
+    });
+  }
+
+  @Roles("admin")
+  @Put("/update/store/:id")
+  @UseInterceptors(FileInterceptor("image_url"))
+  async updateStore(
+    @UploadedFile() upload_file: Express.Multer.File,
+    @Param("id") id: string,
+    @Body() createStoreDto: CreateStoreDto,
+  ) {
+    return this.storeService.updateStore({
+      ...createStoreDto,
+      id: id,
+      image_url: upload_file,
     });
   }
 
@@ -63,7 +80,6 @@ export class StoreController {
   ) {
     return this.storeService.createAndAssociateFeaturedProducts(body);
   } */
-
   @Roles("admin")
   @Delete("/delete/store")
   async deleteStore(@Body() createStoreDto: CreateStoreDto) {

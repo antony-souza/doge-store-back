@@ -30,4 +30,6 @@ export class CreateUserDto {
   @IsNotEmpty()
   @IsString()
   role: Role;
+
+  image_url: Express.Multer.File;
 }
