@@ -18,13 +18,13 @@ import { JwtAuthGuard } from "src/jwt/auth.guard.service";
 import { FileInterceptor } from "@nestjs/platform-express";
 
 @Controller("product")
-@Roles("admin")
+@Roles("admin", "user")
 @UseGuards(JwtAuthGuard, RolesGuard)
 export class ProductController {
   constructor(private readonly productService: ProductService) {}
 
   @Post()
-  @UseInterceptors(FileInterceptor("upload_file"))
+  @UseInterceptors(FileInterceptor("image_url"))
   create(
     @Body() createProductDto: CreateProductDto,
     @UploadedFile() upload_file: Express.Multer.File,
@@ -35,9 +35,9 @@ export class ProductController {
     });
   }
 
-  @Get()
-  findAll() {
-    return this.productService.findAll();
+  @Get("/search/:id")
+  findAll(@Param("id") store_id: string) {
+    return this.productService.findAll(store_id);
   }
 
   @Get(":id")

@@ -53,10 +53,18 @@ export class ProductService {
     });
   }
 
-  async findAll() {
+  async findAll(store_id: string) {
     return await this.prismaService.product.findMany({
       where: {
+        store_id: store_id,
         enabled: true,
+      },
+      include: {
+        category: {
+          select: {
+            name: true,
+          },
+        },
       },
     });
   }

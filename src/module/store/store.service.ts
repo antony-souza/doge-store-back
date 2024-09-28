@@ -158,7 +158,7 @@ export class StoreService {
 
     return {
       message: "Store created successfully",
-      data: createdStore,
+      createdStore,
     };
   }
 

@@ -24,7 +24,7 @@ export class CategoryController {
   constructor(private readonly categoryService: CategoryService) {}
 
   @Post()
-  @UseInterceptors(FileInterceptor("upload_file"))
+  @UseInterceptors(FileInterceptor("image_url"))
   create(
     @Body() createCategoryDto: CreateCategoryDto,
     @UploadedFile() upload_file: Express.Multer.File,
