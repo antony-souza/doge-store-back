@@ -6,6 +6,7 @@ import {
 import { PrismaService } from "src/database/prisma.service";
 import { CreateStoreDto } from "./Dtos/create-store.dto";
 import UploadFileFactoryService from "src/util/upload-service/upload-file.service";
+import { UpdateStore } from "./Dtos/update-store.dto";
 
 @Injectable()
 export class StoreService {
@@ -39,7 +40,7 @@ export class StoreService {
         image_url: true,
         description: true,
         background_color: true,
-        user: {
+        users: {
           select: {
             id: true,
             name: true,
@@ -138,14 +139,14 @@ export class StoreService {
         is_open: createStoreDto.is_open,
         background_color: createStoreDto.background_color,
         image_url: url,
-        user: {
+        users: {
           connect: {
             id: createStoreDto.user_id,
           },
         },
       },
       include: {
-        user: {
+        users: {
           select: {
             id: true,
             name: true,
@@ -162,9 +163,9 @@ export class StoreService {
     };
   }
 
-  async updateStore(createStoreDto: CreateStoreDto) {
+  async updateStore(updateStoreDto: UpdateStore) {
     const existingStore = await this.prisma.store.count({
-      where: { id: createStoreDto.id },
+      where: { id: updateStoreDto.id },
     });
 
     if (existingStore === 0) {
@@ -172,17 +173,17 @@ export class StoreService {
     }
 
     let url = "";
-    url = await this.uploadFilService.upload(createStoreDto.image_url);
+    url = await this.uploadFilService.upload(updateStoreDto.image_url);
 
     const updatedStore = await this.prisma.store.update({
-      where: { id: createStoreDto.id },
+      where: { id: updateStoreDto.id },
       data: {
-        name: createStoreDto.name,
-        phone: createStoreDto.phone,
-        address: createStoreDto.address,
-        description: createStoreDto.description,
-        is_open: createStoreDto.is_open,
-        background_color: createStoreDto.background_color,
+        name: updateStoreDto.name,
+        phone: updateStoreDto.phone,
+        address: updateStoreDto.address,
+        description: updateStoreDto.description,
+        is_open: updateStoreDto.is_open,
+        background_color: updateStoreDto.background_color,
         image_url: url,
       },
     });

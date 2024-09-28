@@ -17,6 +17,7 @@ import { JwtAuthGuard } from "src/jwt/auth.guard.service";
 import { Roles, RolesGuard } from "src/database/role.service";
 import { CreateStoreDto } from "./Dtos/create-store.dto";
 import { FileInterceptor } from "@nestjs/platform-express";
+import { UpdateStore } from "./Dtos/update-store.dto";
 
 @Controller("/store")
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -56,10 +57,10 @@ export class StoreController {
   async updateStore(
     @UploadedFile() upload_file: Express.Multer.File,
     @Param("id") id: string,
-    @Body() createStoreDto: CreateStoreDto,
+    @Body() updateStoreDto: UpdateStore,
   ) {
     return this.storeService.updateStore({
-      ...createStoreDto,
+      ...updateStoreDto,
       id: id,
       image_url: upload_file,
     });
