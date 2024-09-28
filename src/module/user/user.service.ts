@@ -56,6 +56,7 @@ export class UserService {
           password: hashPassword,
           role: createUserDto.role as Role,
           image_url: url,
+          store_id: createUserDto.store_id || undefined,
         },
       });
 
