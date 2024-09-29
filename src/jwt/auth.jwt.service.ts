@@ -1,17 +1,27 @@
 import { Injectable, UnauthorizedException } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
-import { User, Role } from "@prisma/client";
+import { Users, Role } from "@prisma/client";
 
 @Injectable()
 export class AuthJwtService {
   constructor(private jwtService: JwtService) {}
 
-  generateToken(user: User): string {
-    const payload = { id: user.id, name: user.name, role: user.role };
+  generateToken(user: Users): string {
+    const payload = {
+      id: user.id,
+      name: user.name,
+      role: user.role,
+      store_id: user.store_id,
+    };
     return this.jwtService.sign(payload, { secret: process.env.TOKEN_KEY });
   }
 
-  verifyToken(token: string): { id: string; name: string; role: Role } {
+  verifyToken(token: string): {
+    id: string;
+    name: string;
+    role: Role;
+    store_id: string;
+  } {
     try {
       return this.jwtService.verify(token, { secret: process.env.TOKEN_KEY });
     } catch (error) {

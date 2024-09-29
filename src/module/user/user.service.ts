@@ -3,13 +3,17 @@ import { Role } from "@prisma/client";
 import { PrismaService } from "src/database/prisma.service";
 import GeneratePasswordService from "src/util/generate-password.service";
 import { CreateUserDto } from "./Dtos/create.user.dto";
-import { UpdateUserDto } from "./Dtos/update.user.dto copy";
+import { UpdateUserDto } from "./Dtos/update.user.dto";
+import { ImgurUploadService } from "src/util/upload-service/imgur-upload.service";
 
 @Injectable()
 export class UserService {
   private readonly generatePasswordService: GeneratePasswordService;
 
-  constructor(private readonly prisma: PrismaService) {
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly imgurFileUpload: ImgurUploadService,
+  ) {
     this.generatePasswordService = new GeneratePasswordService();
   }
 
@@ -21,6 +25,7 @@ export class UserService {
           name: true,
           email: true,
           role: true,
+          image_url: true,
         },
       });
     } catch (error) {
@@ -42,12 +47,16 @@ export class UserService {
         createUserDto.password,
       );
 
+      let url = "";
+      url = await this.imgurFileUpload.upload(createUserDto.image_url);
       const createUser = await this.prisma.users.create({
         data: {
           name: createUserDto.name,
           email: createUserDto.email,
           password: hashPassword,
           role: createUserDto.role as Role,
+          image_url: url,
+          store_id: createUserDto.store_id || undefined,
         },
       });
 
@@ -70,22 +79,31 @@ export class UserService {
         throw new ConflictException("User does not exist");
       }
 
-      const hashPassword = await this.generatePasswordService.createHash(
-        user.password,
-      );
-      const updateUser = await this.prisma.users.update({
+      let hashPassword = user.password;
+
+      if (user.password) {
+        hashPassword = await this.generatePasswordService.createHash(
+          user.password,
+        );
+      }
+
+      let newImg = "";
+      if (user.image_url) {
+        newImg = await this.imgurFileUpload.upload(user.image_url);
+      }
+
+      const updatedUser = await this.prisma.users.update({
         where: { id: user.id },
         data: {
-          name: user.name,
-          email: user.email,
+          ...user,
           password: hashPassword,
-          role: user.role,
+          image_url: newImg,
         },
       });
 
       return {
         message: "User updated successfully!",
-        user: updateUser,
+        user: updatedUser,
       };
     } catch (error) {
       throw new ConflictException(error.message);

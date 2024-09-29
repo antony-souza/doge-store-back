@@ -5,7 +5,7 @@ import { PrismaService } from "src/database/prisma.service";
 import { AuthJwtService } from "src/jwt/auth.jwt.service";
 import { PublicModule } from "./public/public.module";
 import { PublicService } from "./public/public.service";
-import UploadFileService from "src/util/upload-file.service";
+import UploadFileFactoryService from "src/util/upload-service/upload-file.service";
 
 @Module({
   providers: [
@@ -13,7 +13,7 @@ import UploadFileService from "src/util/upload-file.service";
     PrismaService,
     AuthJwtService,
     PublicService,
-    UploadFileService,
+    UploadFileFactoryService,
   ],
   controllers: [StoreController],
   exports: [StoreService],

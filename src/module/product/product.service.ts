@@ -2,13 +2,13 @@ import { BadRequestException, Injectable } from "@nestjs/common";
 import { CreateProductDto } from "./dto/create-product.dto";
 import { UpdateProductDto } from "./dto/update-product.dto";
 import { PrismaService } from "src/database/prisma.service";
-import UploadFileService from "src/util/upload-file.service";
+import UploadFileFactoryService from "src/util/upload-service/upload-file.service";
 
 @Injectable()
 export class ProductService {
   constructor(
     private readonly prismaService: PrismaService,
-    private readonly uploadFileService: UploadFileService,
+    private readonly UploadFileFactoryService: UploadFileFactoryService,
   ) {}
 
   async create(createProductDto: CreateProductDto) {
@@ -37,7 +37,9 @@ export class ProductService {
     let url = "";
 
     if (createProductDto.upload_file) {
-      url = await this.uploadFileService.upload(createProductDto.upload_file);
+      url = await this.UploadFileFactoryService.upload(
+        createProductDto.upload_file,
+      );
     }
 
     return await this.prismaService.product.create({
@@ -51,10 +53,18 @@ export class ProductService {
     });
   }
 
-  async findAll() {
+  async findAll(store_id: string) {
     return await this.prismaService.product.findMany({
       where: {
+        store_id: store_id,
         enabled: true,
+      },
+      include: {
+        category: {
+          select: {
+            name: true,
+          },
+        },
       },
     });
   }

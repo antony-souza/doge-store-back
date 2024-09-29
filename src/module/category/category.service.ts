@@ -2,17 +2,17 @@ import { Injectable } from "@nestjs/common";
 import { CreateCategoryDto } from "./dto/create-category.dto";
 import { UpdateCategoryDto } from "./dto/update-category.dto";
 import { PrismaService } from "src/database/prisma.service";
-import UploadFileService from "src/util/upload-file.service";
+import UploadFileFactoryService from "src/util/upload-service/upload-file.service";
 
 @Injectable()
 export class CategoryService {
   constructor(
     private readonly prismaService: PrismaService,
-    private readonly uploadFileService: UploadFileService,
+    private readonly UploadFileFactoryService: UploadFileFactoryService,
   ) {}
 
   async create(createCategoryDto: CreateCategoryDto) {
-    const url = await this.uploadFileService.upload(
+    const url = await this.UploadFileFactoryService.upload(
       createCategoryDto.upload_file,
     );
 
