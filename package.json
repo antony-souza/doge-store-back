@@ -20,7 +20,8 @@
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "docker-up": "docker-compose --env-file .env up -d",
     "docker-down": "docker-compose --env-file .env down",
-    "init-user": "ts-node init-user-admin.ts"
+    "init-user": "ts-node init-user-admin.ts",
+    "vercel-build":"npx prisma migrate deploy"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.645.0",
