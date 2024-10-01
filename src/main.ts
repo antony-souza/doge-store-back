@@ -9,9 +9,9 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe());
   app.enableCors();
 
-  app.use("/", (req, res) => {
+  /*   app.use("/", (req, res) => {
     res.send("Hello World");
-  });
+  }); */
 
   await app.listen(PORT);
   new Logger().log(`Server is Running: ${PORT}`, "SERVER");
