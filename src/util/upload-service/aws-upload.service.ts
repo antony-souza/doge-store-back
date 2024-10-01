@@ -15,8 +15,8 @@ export default class AwsUploadService implements IUploadFactoryService {
     const s3Client = new S3Client({
       region: this.AWS_S3_REGION,
       credentials: {
-        accessKeyId: process.env.AWS_KEY_ID ?? "",
-        secretAccessKey: process.env.AWS_SECRET_KEY ?? " ",
+        accessKeyId: process.env.AWS_KEY_ID_1 ?? "",
+        secretAccessKey: process.env.AWS_SECRET_KEY_1 ?? " ",
       },
     });
 

@@ -1,14 +1,19 @@
+version: '3.8'
+
 services:
-  pgadmin:
-    image: dpage/pgadmin4
+  doge_back:
+    build:
+      context: .  
+      dockerfile: Dockerfile  
     restart: always
-    container_name: doge_pgadmin
-    environment:
-      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
-      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
-    ports:
-      - ${PGADMIN_PORT}:80
+    container_name: doge_store_back
+    working_dir: /app
     volumes:
-      - pgadmin_storage:/var/lib/pgadmin
+      - .:/app  
+    ports:
+      - "4200:4200"  
+    env_file: 
+      - .env
+
 volumes:
-  pgadmin_storage:
+  doge_store_back:
