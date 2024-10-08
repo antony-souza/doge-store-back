@@ -36,9 +36,9 @@ export class ProductService {
 
     let url = "";
 
-    if (createProductDto.upload_file) {
+    if (createProductDto.image_url) {
       url = await this.UploadFileFactoryService.upload(
-        createProductDto.upload_file,
+        createProductDto.image_url,
       );
     }
 
@@ -90,9 +90,9 @@ export class ProductService {
 
     let [url] = existingProduct.image_url;
 
-    if (updateProductDto.upload_file) {
+    if (updateProductDto.image_url) {
       url = await this.UploadFileFactoryService.upload(
-        updateProductDto.upload_file,
+        updateProductDto.image_url,
       );
     }
 
@@ -101,9 +101,7 @@ export class ProductService {
         id: updateProductDto.id,
       },
       data: {
-        name: updateProductDto.name,
-        price: updateProductDto.price,
-        description: updateProductDto.description,
+        ...updateProductDto,
         image_url: [url],
       },
     });

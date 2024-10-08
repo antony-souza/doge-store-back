@@ -22,5 +22,5 @@ export class CreateProductDto {
   @Type(() => Number)
   price: number;
 
-  upload_file: Express.Multer.File;
+  image_url: Express.Multer.File;
 }

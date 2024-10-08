@@ -31,7 +31,7 @@ export class ProductController {
   ) {
     return this.productService.create({
       ...createProductDto,
-      upload_file: upload_file,
+      image_url: upload_file,
     });
   }
 
@@ -55,7 +55,7 @@ export class ProductController {
     return this.productService.update({
       ...updateProductDto,
       id: id,
-      upload_file: upload_file,
+      image_url: upload_file,
     });
   }
 
