@@ -36,9 +36,16 @@ export class CategoryController {
     });
   }
 
-  @Get()
+  @Get("")
   findAll() {
     return this.categoryService.findAll();
+  }
+
+  @Get("/search/:id")
+  findAllCategoryByStoreId(@Param("id") store_id: string) {
+    return this.categoryService.findAllCategoryByStoreId({
+      store_id: store_id,
+    });
   }
 
   @Put(":id")

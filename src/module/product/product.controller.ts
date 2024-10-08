@@ -23,15 +23,17 @@ import { FileInterceptor } from "@nestjs/platform-express";
 export class ProductController {
   constructor(private readonly productService: ProductService) {}
 
-  @Post()
+  @Post("/create/:id")
   @UseInterceptors(FileInterceptor("image_url"))
   create(
+    @Param("id") store_id: string,
     @Body() createProductDto: CreateProductDto,
     @UploadedFile() upload_file: Express.Multer.File,
   ) {
     return this.productService.create({
       ...createProductDto,
       image_url: upload_file,
+      store_id: store_id,
     });
   }
 
