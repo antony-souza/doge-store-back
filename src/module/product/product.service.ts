@@ -77,13 +77,34 @@ export class ProductService {
     });
   }
 
-  async update(id: string, updateProductDto: UpdateProductDto) {
+  async update(updateProductDto: UpdateProductDto) {
+    console.log("Atualizando produto:", updateProductDto);
+    const existingProduct = await this.prismaService.product.findUnique({
+      where: {
+        id: updateProductDto.id,
+      },
+    });
+    if (!existingProduct) {
+      throw new BadRequestException("Product not found");
+    }
+
+    let [url] = existingProduct.image_url;
+
+    if (updateProductDto.upload_file) {
+      url = await this.UploadFileFactoryService.upload(
+        updateProductDto.upload_file,
+      );
+    }
+
     return await this.prismaService.product.update({
       where: {
-        id,
+        id: updateProductDto.id,
       },
       data: {
-        ...updateProductDto,
+        name: updateProductDto.name,
+        price: updateProductDto.price,
+        description: updateProductDto.description,
+        image_url: [url],
       },
     });
   }

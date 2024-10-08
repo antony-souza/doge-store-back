@@ -52,7 +52,7 @@ export class StoreController {
   }
 
   @Roles("admin")
-  @Put("/update/store/:id")
+  @Put("/update/:id")
   @UseInterceptors(FileInterceptor("image_url"))
   async updateStore(
     @UploadedFile() upload_file: Express.Multer.File,

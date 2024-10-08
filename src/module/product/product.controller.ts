@@ -45,9 +45,18 @@ export class ProductController {
     return this.productService.findOne(id);
   }
 
-  @Put(":id")
-  update(@Param("id") id: string, @Body() updateProductDto: UpdateProductDto) {
-    return this.productService.update(id, updateProductDto);
+  @Put("/update/:id")
+  @UseInterceptors(FileInterceptor("image_url"))
+  update(
+    @UploadedFile() upload_file: Express.Multer.File,
+    @Param("id") id: string,
+    @Body() updateProductDto: UpdateProductDto,
+  ) {
+    return this.productService.update({
+      ...updateProductDto,
+      id: id,
+      upload_file: upload_file,
+    });
   }
 
   @Delete(":id")

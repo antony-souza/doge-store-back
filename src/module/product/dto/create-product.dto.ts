@@ -1,7 +1,11 @@
 import { Type } from "class-transformer";
-import { IsNumber, IsString } from "class-validator";
+import { IsNumber, IsOptional, IsString, IsUUID } from "class-validator";
 
 export class CreateProductDto {
+  @IsUUID()
+  @IsOptional()
+  id?: string;
+
   @IsString()
   name: string;
 
@@ -10,6 +14,9 @@ export class CreateProductDto {
 
   @IsString()
   category_id: string;
+
+  @IsString()
+  description: string;
 
   @IsNumber()
   @Type(() => Number)

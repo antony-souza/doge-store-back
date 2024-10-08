@@ -40,14 +40,6 @@ export class StoreService {
         image_url: true,
         description: true,
         background_color: true,
-        users: {
-          select: {
-            id: true,
-            name: true,
-            email: true,
-            role: true,
-          },
-        },
       },
     });
 
@@ -164,29 +156,34 @@ export class StoreService {
   }
 
   async updateStore(updateStoreDto: UpdateStore) {
-    const existingStore = await this.prisma.store.count({
+    const existingStore = await this.prisma.store.findUnique({
       where: { id: updateStoreDto.id },
     });
 
-    if (existingStore === 0) {
+    if (!existingStore) {
       throw new NotFoundException("Store not found");
     }
 
-    let url = "";
-    url = await this.uploadFilService.upload(updateStoreDto.image_url);
+    let url = existingStore.image_url;
+
+    if (updateStoreDto.image_url) {
+      url = await this.uploadFilService.upload(updateStoreDto.image_url);
+    }
 
     const updatedStore = await this.prisma.store.update({
       where: { id: updateStoreDto.id },
       data: {
-        name: updateStoreDto.name,
-        phone: updateStoreDto.phone,
-        address: updateStoreDto.address,
-        description: updateStoreDto.description,
-        is_open: updateStoreDto.is_open,
-        background_color: updateStoreDto.background_color,
+        name: updateStoreDto.name ?? existingStore.name,
+        phone: updateStoreDto.phone ?? existingStore.phone,
+        address: updateStoreDto.address ?? existingStore.address,
+        description: updateStoreDto.description ?? existingStore.description,
+        is_open: updateStoreDto.is_open ?? existingStore.is_open,
+        background_color:
+          updateStoreDto.background_color ?? existingStore.background_color,
         image_url: url,
       },
     });
+
     return {
       message: "Store updated successfully",
       data: updatedStore,
