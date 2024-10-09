@@ -1,11 +1,15 @@
-import { IsString } from "class-validator";
+import { IsOptional, IsString, IsUUID } from "class-validator";
 
 export class CreateCategoryDto {
+  @IsUUID()
+  @IsOptional()
+  id?: string;
+
   @IsString()
   name: string;
 
   @IsString()
   store_id: string;
 
-  upload_file: Express.Multer.File;
+  image_url: Express.Multer.File;
 }

@@ -13,7 +13,7 @@ export class CategoryService {
 
   async create(createCategoryDto: CreateCategoryDto) {
     const url = await this.UploadFileFactoryService.upload(
-      createCategoryDto.upload_file,
+      createCategoryDto.image_url,
     );
 
     const response = await this.prismaService.category.create({
@@ -59,13 +59,31 @@ export class CategoryService {
     });
   }
 
-  async update(id: string, updateCategoryDto: UpdateCategoryDto) {
+  async update(updateCategoryDto: UpdateCategoryDto) {
+    const existingCategory = await this.prismaService.category.findUnique({
+      where: {
+        id: updateCategoryDto.id,
+      },
+    });
+
+    if (!existingCategory) {
+      throw new NotFoundException("Category not found");
+    }
+
+    let [url] = existingCategory.image_url;
+
+    if (updateCategoryDto.image_url) {
+      url = await this.UploadFileFactoryService.upload(
+        updateCategoryDto.image_url,
+      );
+    }
     return await this.prismaService.category.update({
       where: {
-        id,
+        id: updateCategoryDto.id,
       },
       data: {
         ...updateCategoryDto,
+        image_url: [url],
       },
     });
   }
