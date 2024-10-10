@@ -18,7 +18,7 @@ import { UpdateUserDto } from "./Dtos/update.user.dto";
 import { FileInterceptor } from "@nestjs/platform-express";
 
 @Controller("/user")
-@Roles("admin")
+@Roles("admin", "user")
 @UseGuards(JwtAuthGuard, RolesGuard)
 export class UserController {
   constructor(private readonly userService: UserService) {}

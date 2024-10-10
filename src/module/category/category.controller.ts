@@ -62,7 +62,7 @@ export class CategoryController {
     });
   }
 
-  @Delete(":id")
+  @Delete("/delete/:id")
   remove(@Param("id") id: string) {
     return this.categoryService.remove(id);
   }
