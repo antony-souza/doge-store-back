@@ -17,7 +17,7 @@ import { Roles, RolesGuard } from "src/database/role.service";
 import { JwtAuthGuard } from "src/jwt/auth.guard.service";
 import { FileInterceptor } from "@nestjs/platform-express";
 
-@Controller("product")
+@Controller("/product")
 @Roles("admin", "user")
 @UseGuards(JwtAuthGuard, RolesGuard)
 export class ProductController {
@@ -64,5 +64,10 @@ export class ProductController {
   @Delete("/delete/:id")
   remove(@Param("id") id: string) {
     return this.productService.remove(id);
+  }
+
+  @Get("/featured/:id")
+  getFeaturedProducts(@Param("id") id: string) {
+    return this.productService.getFeaturedProducts(id);
   }
 }

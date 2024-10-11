@@ -81,22 +81,6 @@ export class StoreService {
             category_id: true,
           },
         },
-        featured_products: {
-          select: {
-            id: true,
-            store_id: true,
-            product: {
-              select: {
-                id: true,
-                name: true,
-                price: true,
-                image_url: true,
-                description: true,
-                category_id: true,
-              },
-            },
-          },
-        },
       },
     });
 

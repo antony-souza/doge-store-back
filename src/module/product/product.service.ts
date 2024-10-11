@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable } from "@nestjs/common";
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from "@nestjs/common";
 import { CreateProductDto } from "./dto/create-product.dto";
 import { UpdateProductDto } from "./dto/update-product.dto";
 import { PrismaService } from "src/database/prisma.service";
@@ -116,5 +120,42 @@ export class ProductService {
         enabled: false,
       },
     });
+  }
+
+  async getFeaturedProducts(id: string) {
+    const existingStore = await this.prismaService.store.count({
+      where: {
+        id: id,
+      },
+    });
+
+    if (existingStore === 0) {
+      throw new NotFoundException("Loja não encontrada");
+    }
+
+    const featuredProducts = await this.prismaService.product.findMany({
+      where: {
+        store_id: id,
+        featuredProducts: true,
+      },
+      select: {
+        id: true,
+        name: true,
+        price: true,
+        description: true,
+        image_url: true,
+        category: {
+          select: {
+            name: true,
+          },
+        },
+      },
+    });
+
+    if (!featuredProducts) {
+      throw new NotFoundException("Nenhum produto destacado encontrado");
+    }
+
+    return featuredProducts;
   }
 }
