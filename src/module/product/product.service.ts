@@ -48,6 +48,7 @@ export class ProductService {
         category_id: createProductDto.category_id,
         store_id: createProductDto.store_id,
         price: Number(createProductDto.price),
+        description: createProductDto.description,
         image_url: [url],
       },
     });
