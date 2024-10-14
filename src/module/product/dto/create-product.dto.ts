@@ -22,5 +22,9 @@ export class CreateProductDto {
   @Type(() => Number)
   price: number;
 
+  @IsString()
+  @IsOptional()
+  featured_products?: string;
+
   image_url: Express.Multer.File;
 }

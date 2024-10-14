@@ -99,6 +99,8 @@ export class ProductService {
         updateProductDto.image_url,
       );
     }
+    const isFeaturedProduct = updateProductDto.featured_products === "true";
+    console.log(isFeaturedProduct);
 
     return await this.prismaService.product.update({
       where: {
@@ -107,6 +109,7 @@ export class ProductService {
       data: {
         ...updateProductDto,
         image_url: [url],
+        featured_products: isFeaturedProduct,
       },
     });
   }
@@ -136,7 +139,7 @@ export class ProductService {
     const featuredProducts = await this.prismaService.product.findMany({
       where: {
         store_id: id,
-        featuredProducts: true,
+        featured_products: true,
       },
       select: {
         id: true,

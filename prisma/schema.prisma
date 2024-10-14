@@ -71,7 +71,7 @@ model Product {
   category                 Category                   @relation(fields: [category_id], references: [id])
   store                    Store                      @relation(fields: [store_id], references: [id])
   ProductAndAddtionalDishe ProductAndAddtionalDishe[]
-  featuredProducts         Boolean?                   @default(false)
+  featured_products         Boolean?                   @default(false)
 
   @@map("product")
 }
