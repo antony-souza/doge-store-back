@@ -23,33 +23,46 @@ import { FileInterceptor } from "@nestjs/platform-express";
 export class CategoryController {
   constructor(private readonly categoryService: CategoryService) {}
 
-  @Post()
+  @Post("/create")
   @UseInterceptors(FileInterceptor("image_url"))
   create(
     @Body() createCategoryDto: CreateCategoryDto,
-    @UploadedFile() upload_file: Express.Multer.File,
+    @UploadedFile() image_url: Express.Multer.File,
   ) {
     return this.categoryService.create({
       name: createCategoryDto.name,
-      upload_file: upload_file,
+      image_url: image_url,
       store_id: createCategoryDto.store_id,
     });
   }
 
-  @Get()
+  @Get("")
   findAll() {
     return this.categoryService.findAll();
   }
 
-  @Put(":id")
+  @Get("/search/:id")
+  findAllCategoryByStoreId(@Param("id") store_id: string) {
+    return this.categoryService.findAllCategoryByStoreId({
+      store_id: store_id,
+    });
+  }
+
+  @Put("/update/:id")
+  @UseInterceptors(FileInterceptor("image_url"))
   update(
     @Param("id") id: string,
     @Body() updateCategoryDto: UpdateCategoryDto,
+    @UploadedFile() image_url: Express.Multer.File,
   ) {
-    return this.categoryService.update(id, updateCategoryDto);
+    return this.categoryService.update({
+      ...updateCategoryDto,
+      id: id,
+      image_url: image_url,
+    });
   }
 
-  @Delete(":id")
+  @Delete("/delete/:id")
   remove(@Param("id") id: string) {
     return this.categoryService.remove(id);
   }

@@ -8,22 +8,21 @@ datasource db {
 }
 
 model Users {
-  id         String   @id @default(uuid())
-  name       String
-  email      String   @unique
-  password   String
-  role       Role     @default(user)
-  image_url  String   @default("")
-  store_id   String?  
-  store      Store?   @relation("StoreUsers",fields: [store_id], references: [id])
+  id        String  @id @default(uuid())
+  name      String
+  email     String  @unique
+  password  String
+  role      Role    @default(user)
+  image_url String  @default("")
+  store_id  String?
+  store     Store?  @relation("StoreUsers", fields: [store_id], references: [id])
 
   created_at DateTime @default(now())
   updated_at DateTime @default(now())
 
-  @@map("users")
   @@index([store_id])
+  @@map("users")
 }
-
 
 model Store {
   id                       String                     @id @default(uuid())
@@ -38,7 +37,6 @@ model Store {
   updated_at               DateTime                   @default(now())
   users                    Users[]                    @relation("StoreUsers")
   category                 Category[]
-  featured_products        FeaturedProducts[]
   product                  Product[]
   ProductAndAddtionalDishe ProductAndAddtionalDishe[]
 
@@ -73,21 +71,9 @@ model Product {
   category                 Category                   @relation(fields: [category_id], references: [id])
   store                    Store                      @relation(fields: [store_id], references: [id])
   ProductAndAddtionalDishe ProductAndAddtionalDishe[]
-  featured_products        FeaturedProducts[]         @relation("FeaturedProductsToProduct")
+  featured_products         Boolean?                   @default(false)
 
   @@map("product")
-}
-
-model FeaturedProducts {
-  id         String    @id @default(uuid())
-  enabled    Boolean   @default(true)
-  store_id   String
-  created_at DateTime  @default(now())
-  updated_at DateTime  @default(now())
-  store      Store     @relation(fields: [store_id], references: [id])
-  product    Product[] @relation("FeaturedProductsToProduct")
-
-  @@map("featured_products")
 }
 
 model AdditionalDishe {

@@ -17,21 +17,23 @@ import { Roles, RolesGuard } from "src/database/role.service";
 import { JwtAuthGuard } from "src/jwt/auth.guard.service";
 import { FileInterceptor } from "@nestjs/platform-express";
 
-@Controller("product")
+@Controller("/product")
 @Roles("admin", "user")
 @UseGuards(JwtAuthGuard, RolesGuard)
 export class ProductController {
   constructor(private readonly productService: ProductService) {}
 
-  @Post()
+  @Post("/create/:id")
   @UseInterceptors(FileInterceptor("image_url"))
   create(
+    @Param("id") store_id: string,
     @Body() createProductDto: CreateProductDto,
     @UploadedFile() upload_file: Express.Multer.File,
   ) {
     return this.productService.create({
       ...createProductDto,
-      upload_file: upload_file,
+      image_url: upload_file,
+      store_id: store_id,
     });
   }
 
@@ -45,13 +47,27 @@ export class ProductController {
     return this.productService.findOne(id);
   }
 
-  @Put(":id")
-  update(@Param("id") id: string, @Body() updateProductDto: UpdateProductDto) {
-    return this.productService.update(id, updateProductDto);
+  @Put("/update/:id")
+  @UseInterceptors(FileInterceptor("image_url"))
+  update(
+    @UploadedFile() upload_file: Express.Multer.File,
+    @Param("id") id: string,
+    @Body() updateProductDto: UpdateProductDto,
+  ) {
+    return this.productService.update({
+      ...updateProductDto,
+      id: id,
+      image_url: upload_file,
+    });
   }
 
-  @Delete(":id")
+  @Delete("/delete/:id")
   remove(@Param("id") id: string) {
     return this.productService.remove(id);
+  }
+
+  @Get("/featured/:id")
+  getFeaturedProducts(@Param("id") id: string) {
+    return this.productService.getFeaturedProducts(id);
   }
 }

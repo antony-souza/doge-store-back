@@ -1,7 +1,11 @@
 import { Type } from "class-transformer";
-import { IsNumber, IsString } from "class-validator";
+import { IsNumber, IsOptional, IsString } from "class-validator";
 
 export class CreateProductDto {
+  @IsString()
+  @IsOptional()
+  id?: string;
+
   @IsString()
   name: string;
 
@@ -11,9 +15,16 @@ export class CreateProductDto {
   @IsString()
   category_id: string;
 
+  @IsString()
+  description: string;
+
   @IsNumber()
   @Type(() => Number)
   price: number;
 
-  upload_file: Express.Multer.File;
+  @IsString()
+  @IsOptional()
+  featured_products?: string;
+
+  image_url: Express.Multer.File;
 }

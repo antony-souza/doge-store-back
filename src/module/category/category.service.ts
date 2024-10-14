@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, NotFoundException } from "@nestjs/common";
 import { CreateCategoryDto } from "./dto/create-category.dto";
 import { UpdateCategoryDto } from "./dto/update-category.dto";
 import { PrismaService } from "src/database/prisma.service";
@@ -13,7 +13,7 @@ export class CategoryService {
 
   async create(createCategoryDto: CreateCategoryDto) {
     const url = await this.UploadFileFactoryService.upload(
-      createCategoryDto.upload_file,
+      createCategoryDto.image_url,
     );
 
     const response = await this.prismaService.category.create({
@@ -35,13 +35,55 @@ export class CategoryService {
     });
   }
 
-  async update(id: string, updateCategoryDto: UpdateCategoryDto) {
+  async findAllCategoryByStoreId(categoryDto: UpdateCategoryDto) {
+    const existingCategory = await this.prismaService.store.count({
+      where: {
+        id: categoryDto.store_id,
+      },
+    });
+
+    if (existingCategory === 0) {
+      throw new NotFoundException("Store not found");
+    }
+
+    return await this.prismaService.category.findMany({
+      where: {
+        store_id: categoryDto.store_id,
+        enabled: true,
+      },
+      select: {
+        id: true,
+        name: true,
+        image_url: true,
+      },
+    });
+  }
+
+  async update(updateCategoryDto: UpdateCategoryDto) {
+    const existingCategory = await this.prismaService.category.findUnique({
+      where: {
+        id: updateCategoryDto.id,
+      },
+    });
+
+    if (!existingCategory) {
+      throw new NotFoundException("Category not found");
+    }
+
+    let [url] = existingCategory.image_url;
+
+    if (updateCategoryDto.image_url) {
+      url = await this.UploadFileFactoryService.upload(
+        updateCategoryDto.image_url,
+      );
+    }
     return await this.prismaService.category.update({
       where: {
-        id,
+        id: updateCategoryDto.id,
       },
       data: {
         ...updateCategoryDto,
+        image_url: [url],
       },
     });
   }

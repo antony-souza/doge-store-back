@@ -4,15 +4,14 @@ import { PrismaService } from "src/database/prisma.service";
 import GeneratePasswordService from "src/util/generate-password.service";
 import { CreateUserDto } from "./Dtos/create.user.dto";
 import { UpdateUserDto } from "./Dtos/update.user.dto";
-import { ImgurUploadService } from "src/util/upload-service/imgur-upload.service";
+import UploadFileFactoryService from "src/util/upload-service/upload-file.service";
 
 @Injectable()
 export class UserService {
   private readonly generatePasswordService: GeneratePasswordService;
-
   constructor(
     private readonly prisma: PrismaService,
-    private readonly imgurFileUpload: ImgurUploadService,
+    private readonly UploadFileFactoryService: UploadFileFactoryService,
   ) {
     this.generatePasswordService = new GeneratePasswordService();
   }
@@ -48,7 +47,7 @@ export class UserService {
       );
 
       let url = "";
-      url = await this.imgurFileUpload.upload(createUserDto.image_url);
+      url = await this.UploadFileFactoryService.upload(createUserDto.image_url);
       const createUser = await this.prisma.users.create({
         data: {
           name: createUserDto.name,
@@ -71,7 +70,7 @@ export class UserService {
 
   async update(user: UpdateUserDto) {
     try {
-      const existingUser = await this.prisma.users.count({
+      const existingUser = await this.prisma.users.findUnique({
         where: { id: user.id },
       });
 
@@ -87,9 +86,10 @@ export class UserService {
         );
       }
 
-      let newImg = "";
+      let url = existingUser.image_url;
+
       if (user.image_url) {
-        newImg = await this.imgurFileUpload.upload(user.image_url);
+        url = await this.UploadFileFactoryService.upload(user.image_url);
       }
 
       const updatedUser = await this.prisma.users.update({
@@ -97,7 +97,7 @@ export class UserService {
         data: {
           ...user,
           password: hashPassword,
-          image_url: newImg,
+          image_url: url,
         },
       });
 

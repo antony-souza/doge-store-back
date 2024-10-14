@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable } from "@nestjs/common";
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from "@nestjs/common";
 import { CreateProductDto } from "./dto/create-product.dto";
 import { UpdateProductDto } from "./dto/update-product.dto";
 import { PrismaService } from "src/database/prisma.service";
@@ -36,9 +40,9 @@ export class ProductService {
 
     let url = "";
 
-    if (createProductDto.upload_file) {
+    if (createProductDto.image_url) {
       url = await this.UploadFileFactoryService.upload(
-        createProductDto.upload_file,
+        createProductDto.image_url,
       );
     }
 
@@ -48,6 +52,7 @@ export class ProductService {
         category_id: createProductDto.category_id,
         store_id: createProductDto.store_id,
         price: Number(createProductDto.price),
+        description: createProductDto.description,
         image_url: [url],
       },
     });
@@ -77,13 +82,34 @@ export class ProductService {
     });
   }
 
-  async update(id: string, updateProductDto: UpdateProductDto) {
+  async update(updateProductDto: UpdateProductDto) {
+    const existingProduct = await this.prismaService.product.findUnique({
+      where: {
+        id: updateProductDto.id,
+      },
+    });
+    if (!existingProduct) {
+      throw new BadRequestException("Product not found");
+    }
+
+    let [url] = existingProduct.image_url;
+
+    if (updateProductDto.image_url) {
+      url = await this.UploadFileFactoryService.upload(
+        updateProductDto.image_url,
+      );
+    }
+    const isFeaturedProduct = updateProductDto.featured_products === "true";
+    console.log(isFeaturedProduct);
+
     return await this.prismaService.product.update({
       where: {
-        id,
+        id: updateProductDto.id,
       },
       data: {
         ...updateProductDto,
+        image_url: [url],
+        featured_products: isFeaturedProduct,
       },
     });
   }
@@ -97,5 +123,42 @@ export class ProductService {
         enabled: false,
       },
     });
+  }
+
+  async getFeaturedProducts(id: string) {
+    const existingStore = await this.prismaService.store.count({
+      where: {
+        id: id,
+      },
+    });
+
+    if (existingStore === 0) {
+      throw new NotFoundException("Loja não encontrada");
+    }
+
+    const featuredProducts = await this.prismaService.product.findMany({
+      where: {
+        store_id: id,
+        featured_products: true,
+      },
+      select: {
+        id: true,
+        name: true,
+        price: true,
+        description: true,
+        image_url: true,
+        category: {
+          select: {
+            name: true,
+          },
+        },
+      },
+    });
+
+    if (!featuredProducts) {
+      throw new NotFoundException("Nenhum produto destacado encontrado");
+    }
+
+    return featuredProducts;
   }
 }
