@@ -18,7 +18,7 @@ import { JwtAuthGuard } from "src/jwt/auth.guard.service";
 import { FileInterceptor } from "@nestjs/platform-express";
 
 @Controller("category")
-@Roles("admin")
+@Roles("admin", "user")
 @UseGuards(JwtAuthGuard, RolesGuard)
 export class CategoryController {
   constructor(private readonly categoryService: CategoryService) {}

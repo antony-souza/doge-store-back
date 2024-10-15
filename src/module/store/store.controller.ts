@@ -45,7 +45,7 @@ export class StoreController {
   }
 
   @Roles("admin")
-  @Post("/create/store")
+  @Post("/create")
   @UseInterceptors(FileInterceptor("image_url"))
   async createStore(
     @UploadedFile() upload_file: Express.Multer.File,
@@ -73,8 +73,8 @@ export class StoreController {
   }
 
   @Roles("admin")
-  @Delete("/delete/store")
-  async deleteStore(@Body() createStoreDto: CreateStoreDto) {
-    return this.storeService.deleteStoreAndRelationships(createStoreDto);
+  @Delete("/delete/:id")
+  async deleteStore(@Param("id") id: string) {
+    return this.storeService.deleteStoreAndRelationships(id);
   }
 }

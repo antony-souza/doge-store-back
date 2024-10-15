@@ -20,6 +20,12 @@ export class StoreService {
       select: {
         id: true,
         name: true,
+        phone: true,
+        address: true,
+        is_open: true,
+        image_url: true,
+        description: true,
+        background_color: true,
       },
     });
 
@@ -168,13 +174,7 @@ export class StoreService {
     const updatedStore = await this.prisma.store.update({
       where: { id: updateStoreDto.id },
       data: {
-        name: updateStoreDto.name ?? existingStore.name,
-        phone: updateStoreDto.phone ?? existingStore.phone,
-        address: updateStoreDto.address ?? existingStore.address,
-        description: updateStoreDto.description ?? existingStore.description,
-        is_open: updateStoreDto.is_open ?? existingStore.is_open,
-        background_color:
-          updateStoreDto.background_color ?? existingStore.background_color,
+        ...updateStoreDto,
         image_url: url,
       },
     });
@@ -185,9 +185,9 @@ export class StoreService {
     };
   }
 
-  async deleteStoreAndRelationships(createStoreDto: CreateStoreDto) {
+  async deleteStoreAndRelationships(id: string) {
     const store = await this.prisma.store.findUnique({
-      where: { id: createStoreDto.id },
+      where: { id },
       include: {
         category: true,
         product: true,
@@ -200,7 +200,19 @@ export class StoreService {
     }
 
     await this.prisma.productAndAddtionalDishe.deleteMany({
-      where: { store_id: createStoreDto.id },
+      where: { store_id: id },
+    });
+
+    await this.prisma.product.deleteMany({
+      where: { store_id: id },
+    });
+
+    await this.prisma.category.deleteMany({
+      where: { store_id: id },
+    });
+
+    await this.prisma.store.delete({
+      where: { id },
     });
 
     return {
