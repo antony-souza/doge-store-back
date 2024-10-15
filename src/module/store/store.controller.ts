@@ -33,6 +33,12 @@ export class StoreController {
   }
 
   @Roles("admin")
+  @Get("/all")
+  async getAllStore() {
+    return this.storeService.getAllStore();
+  }
+
+  @Roles("admin")
   @Get("/search_store")
   async searchStore(@Query() query: { name: string }) {
     return this.storeService.getStoreByName(query);
@@ -66,25 +72,9 @@ export class StoreController {
     });
   }
 
-  /*  @Roles("admin")
-  @Post("/create/featured-products")
-  async createFeaturedProduct(
-    @Body()
-    body: {
-      store_id: string;
-      product_ids: string[];
-    },
-  ) {
-    return this.storeService.createAndAssociateFeaturedProducts(body);
-  } */
   @Roles("admin")
   @Delete("/delete/store")
   async deleteStore(@Body() createStoreDto: CreateStoreDto) {
     return this.storeService.deleteStoreAndRelationships(createStoreDto);
   }
-
-  /* @Delete("/delete/all/store-configs")
-  async deleteAllStoreConfigs() {
-    return this.storeService.deleteAllStoreConfigs();
-  } */
 }

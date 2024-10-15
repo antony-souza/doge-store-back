@@ -15,6 +15,17 @@ export class StoreService {
     private readonly uploadFilService: UploadFileFactoryService,
   ) {}
 
+  async getAllStore() {
+    const store = await this.prisma.store.findMany({
+      select: {
+        id: true,
+        name: true,
+      },
+    });
+
+    return store;
+  }
+
   //Mapear os dados do store na interface do client
   async getStoreClient(store_id: string) {
     const existingStore = await this.prisma.store.count({

@@ -23,6 +23,11 @@ export class UserService {
           id: true,
           name: true,
           email: true,
+          store: {
+            select: {
+              name: true,
+            },
+          },
           role: true,
           image_url: true,
         },

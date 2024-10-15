@@ -16,7 +16,6 @@ model Users {
   image_url String  @default("")
   store_id  String?
   store     Store?  @relation("StoreUsers", fields: [store_id], references: [id])
-
   created_at DateTime @default(now())
   updated_at DateTime @default(now())
 

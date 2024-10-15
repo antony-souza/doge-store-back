@@ -99,8 +99,8 @@ export class ProductService {
         updateProductDto.image_url,
       );
     }
+
     const isFeaturedProduct = updateProductDto.featured_products === "true";
-    console.log(isFeaturedProduct);
 
     return await this.prismaService.product.update({
       where: {
