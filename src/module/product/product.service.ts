@@ -58,10 +58,10 @@ export class ProductService {
     });
   }
 
-  async findAll(store_id: string) {
+  async findAll(id: string) {
     return await this.prismaService.product.findMany({
       where: {
-        store_id: store_id,
+        store_id: id,
         enabled: true,
       },
       include: {
@@ -109,12 +109,23 @@ export class ProductService {
       data: {
         ...updateProductDto,
         image_url: [url],
+        price: Number(updateProductDto.price),
         featured_products: isFeaturedProduct,
       },
     });
   }
 
   async remove(id: string) {
+    const existingStore = await this.prismaService.product.count({
+      where: {
+        id,
+      },
+    });
+
+    if (existingStore === 0) {
+      throw new NotFoundException("Produto não encontrado");
+    }
+
     return await this.prismaService.product.update({
       where: {
         id,
