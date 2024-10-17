@@ -31,7 +31,7 @@ export class ProductService {
     ]);
 
     if (!checkIfExistCategory) {
-      throw new BadRequestException("Category Already Created");
+      throw new BadRequestException("Category not found");
     }
 
     if (!checkIfExistStore) {
@@ -100,6 +100,12 @@ export class ProductService {
       );
     }
 
+    let price = existingProduct.price;
+
+    if (updateProductDto.price) {
+      price = Number(updateProductDto.price);
+    }
+
     const isFeaturedProduct = updateProductDto.featured_products === "true";
 
     return await this.prismaService.product.update({
@@ -109,7 +115,7 @@ export class ProductService {
       data: {
         ...updateProductDto,
         image_url: [url],
-        price: Number(updateProductDto.price),
+        price,
         featured_products: isFeaturedProduct,
       },
     });

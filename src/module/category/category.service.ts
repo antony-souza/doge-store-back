@@ -61,12 +61,6 @@ export class CategoryService {
             name: true,
           },
         },
-        product: {
-          select: {
-            id: true,
-            name: true,
-          },
-        },
       },
     });
   }
