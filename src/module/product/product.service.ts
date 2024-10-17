@@ -164,6 +164,11 @@ export class ProductService {
         price: true,
         description: true,
         image_url: true,
+        store: {
+          select: {
+            name: true,
+          },
+        },
         category: {
           select: {
             name: true,
