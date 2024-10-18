@@ -63,52 +63,6 @@ export class StoreService {
     return storeData;
   }
 
-  /* Searchs Public(FrontHome) And Private(DogeAdmin)*/
-  async getStoreByName(query: { name: string }) {
-    const { name } = query;
-
-    console.log(name);
-
-    const existingStore = await this.prisma.store.count({
-      where: {
-        name: name,
-      },
-    });
-
-    if (existingStore === 0) {
-      throw new NotFoundException("Store not found");
-    }
-
-    const store = await this.prisma.store.findMany({
-      where: { name: { equals: name, mode: "insensitive" } },
-      include: {
-        category: {
-          select: {
-            id: true,
-            name: true,
-            image_url: true,
-          },
-        },
-        product: {
-          select: {
-            id: true,
-            name: true,
-            price: true,
-            image_url: true,
-            category_id: true,
-          },
-        },
-      },
-    });
-
-    if (store.length === 0) {
-      throw new NotFoundException("Store not found");
-    }
-
-    console.log(store);
-    return store;
-  }
-
   async createStore(createStoreDto: CreateStoreDto) {
     const existingStore = await this.prisma.store.count({
       where: {

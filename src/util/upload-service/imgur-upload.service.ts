@@ -20,6 +20,7 @@ export class ImgurUploadService implements IUploadFactoryService {
     formdata.append("type", "file");
     formdata.append("title", "Doge Store - Images");
     formdata.append("description", "Uploaded via API");
+    formdata.append("privacy", "hidden");
 
     const requestOptions = {
       method: "POST",
@@ -40,6 +41,7 @@ export class ImgurUploadService implements IUploadFactoryService {
       if (!response.ok) {
         throw new Error(result.data.error);
       }
+
       return result.data.link;
     } catch (error) {
       throw new Error("Failed to upload image to Imgur: " + error.message);
