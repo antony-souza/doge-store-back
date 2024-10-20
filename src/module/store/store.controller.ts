@@ -5,7 +5,6 @@ import {
   Delete,
   UseGuards,
   Get,
-  Query,
   UseInterceptors,
   Request,
   UploadedFile,
@@ -36,12 +35,6 @@ export class StoreController {
   @Get("/all")
   async getAllStore() {
     return this.storeService.getAllStore();
-  }
-
-  @Roles("admin")
-  @Get("/search_store")
-  async searchStore(@Query() query: { name: string }) {
-    return this.storeService.getStoreByName(query);
   }
 
   @Roles("admin")

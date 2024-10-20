@@ -55,6 +55,12 @@ export class CategoryService {
         id: true,
         name: true,
         image_url: true,
+        store: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
       },
     });
   }

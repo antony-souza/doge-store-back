@@ -31,7 +31,7 @@ export class ProductService {
     ]);
 
     if (!checkIfExistCategory) {
-      throw new BadRequestException("Category Already Created");
+      throw new BadRequestException("Category not found");
     }
 
     if (!checkIfExistStore) {
@@ -58,10 +58,10 @@ export class ProductService {
     });
   }
 
-  async findAll(store_id: string) {
+  async findAll(id: string) {
     return await this.prismaService.product.findMany({
       where: {
-        store_id: store_id,
+        store_id: id,
         enabled: true,
       },
       include: {
@@ -100,6 +100,12 @@ export class ProductService {
       );
     }
 
+    let price = existingProduct.price;
+
+    if (updateProductDto.price) {
+      price = Number(updateProductDto.price);
+    }
+
     const isFeaturedProduct = updateProductDto.featured_products === "true";
 
     return await this.prismaService.product.update({
@@ -109,12 +115,23 @@ export class ProductService {
       data: {
         ...updateProductDto,
         image_url: [url],
+        price,
         featured_products: isFeaturedProduct,
       },
     });
   }
 
   async remove(id: string) {
+    const existingStore = await this.prismaService.product.count({
+      where: {
+        id,
+      },
+    });
+
+    if (existingStore === 0) {
+      throw new NotFoundException("Produto não encontrado");
+    }
+
     return await this.prismaService.product.update({
       where: {
         id,
@@ -147,6 +164,11 @@ export class ProductService {
         price: true,
         description: true,
         image_url: true,
+        store: {
+          select: {
+            name: true,
+          },
+        },
         category: {
           select: {
             name: true,

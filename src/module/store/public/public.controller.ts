@@ -1,12 +1,12 @@
 import { Controller, Get, Query } from "@nestjs/common";
 import { PublicService } from "./public.service";
 
-@Controller("public")
+@Controller("/public")
 export class PublicController {
   constructor(private readonly store: PublicService) {}
 
-  @Get("/search_store/")
-  async searchStore(@Query() query: { name: string }) {
-    return this.store.getStoreByName(query);
+  @Get("/search/")
+  async searchStore(@Query("name") name: string) {
+    return this.store.getStoreByName(name);
   }
 }

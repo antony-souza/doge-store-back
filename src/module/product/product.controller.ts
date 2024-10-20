@@ -38,8 +38,8 @@ export class ProductController {
   }
 
   @Get("/search/:id")
-  findAll(@Param("id") store_id: string) {
-    return this.productService.findAll(store_id);
+  findAll(@Param("id") id: string) {
+    return this.productService.findAll(id);
   }
 
   @Get(":id")
