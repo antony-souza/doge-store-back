@@ -50,7 +50,7 @@ export class StoreController {
     });
   }
 
-  @Roles("admin")
+  @Roles("admin", "user")
   @Put("/update/:id")
   @UseInterceptors(FileInterceptor("image_url"))
   async updateStore(
