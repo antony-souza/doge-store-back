@@ -6,17 +6,17 @@ import {
   UseGuards,
   Get,
   UseInterceptors,
-  Request,
   UploadedFile,
   Put,
   Param,
+  BadRequestException,
 } from "@nestjs/common";
 import { StoreService } from "./store.service";
 import { JwtAuthGuard } from "src/jwt/auth.guard.service";
 import { Roles, RolesGuard } from "src/database/role.service";
 import { CreateStoreDto } from "./Dtos/create-store.dto";
 import { UpdateStore } from "./Dtos/update-store.dto";
-import { FilesInterceptor } from "@nestjs/platform-express";
+import { FileInterceptor, FilesInterceptor } from "@nestjs/platform-express";
 
 @Controller("/store")
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -25,10 +25,8 @@ export class StoreController {
 
   @Roles("admin", "user")
   @Get("/store-client/:id")
-  async getStoreClient(@Request() req) {
-    const store_id: string = req.user.store_id;
-
-    return this.storeService.getStoreClient(store_id);
+  async getStoreClient(@Param("id") id: string) {
+    return this.storeService.getStoreClient(id);
   }
 
   @Roles("admin")
@@ -39,7 +37,7 @@ export class StoreController {
 
   @Roles("admin")
   @Post("/create")
-  @UseInterceptors(FilesInterceptor("files", 2))
+  @UseInterceptors(FilesInterceptor("image_url"))
   async createStore(
     @UploadedFile() upload_file: Express.Multer.File,
     @Body() createStoreDto: CreateStoreDto,
@@ -47,23 +45,25 @@ export class StoreController {
     return this.storeService.createStore({
       ...createStoreDto,
       image_url: upload_file,
-      background_image: upload_file,
     });
   }
 
   @Roles("admin", "user")
   @Put("/update/:id")
-  @UseInterceptors(FilesInterceptor("files", 2))
+  @UseInterceptors(FileInterceptor("image_url"))
   async updateStore(
     @UploadedFile() upload_file: Express.Multer.File,
     @Param("id") id: string,
     @Body() updateStoreDto: UpdateStore,
   ) {
+    if (!upload_file) {
+      throw new BadRequestException("Nenhum arquivo foi enviado.");
+    }
+
     return this.storeService.updateStore({
       ...updateStoreDto,
       id: id,
       image_url: upload_file,
-      background_image: upload_file,
     });
   }
 
