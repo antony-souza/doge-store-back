@@ -32,6 +32,7 @@ model Store {
   is_open                  Boolean                    @default(true)
   image_url                String
   background_color         String
+  background_image         String                     @default("")
   created_at               DateTime                   @default(now())
   updated_at               DateTime                   @default(now())
   users                    Users[]                    @relation("StoreUsers")

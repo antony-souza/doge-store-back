@@ -25,6 +25,7 @@ export class StoreService {
         is_open: true,
         image_url: true,
         description: true,
+        background_image: true,
         background_color: true,
       },
     });
@@ -56,6 +57,7 @@ export class StoreService {
         address: true,
         image_url: true,
         description: true,
+        background_image: true,
         background_color: true,
       },
     });
@@ -74,8 +76,13 @@ export class StoreService {
       throw new ConflictException("Store already exists");
     }
 
-    let url = "";
-    url = await this.uploadFilService.upload(createStoreDto.image_url);
+    let image_url = "";
+    image_url = await this.uploadFilService.upload(createStoreDto.image_url);
+
+    let background_image = "";
+    background_image = await this.uploadFilService.upload(
+      createStoreDto.background_image,
+    );
 
     const createdStore = await this.prisma.store.create({
       data: {
@@ -84,8 +91,9 @@ export class StoreService {
         address: createStoreDto.address,
         description: createStoreDto.description,
         is_open: createStoreDto.is_open,
+        background_image: background_image,
         background_color: createStoreDto.background_color,
-        image_url: url,
+        image_url: image_url,
         users: {
           connect: {
             id: createStoreDto.user_id,
@@ -119,17 +127,25 @@ export class StoreService {
       throw new NotFoundException("Store not found");
     }
 
-    let url = existingStore.image_url;
+    let image_url = existingStore.image_url;
+    let background_image = existingStore.background_image;
 
     if (updateStoreDto.image_url) {
-      url = await this.uploadFilService.upload(updateStoreDto.image_url);
+      image_url = await this.uploadFilService.upload(updateStoreDto.image_url);
+    }
+
+    if (updateStoreDto.background_image) {
+      background_image = await this.uploadFilService.upload(
+        updateStoreDto.background_image,
+      );
     }
 
     const updatedStore = await this.prisma.store.update({
       where: { id: updateStoreDto.id },
       data: {
         ...updateStoreDto,
-        image_url: url,
+        image_url: image_url,
+        background_image: background_image,
       },
     });
 
