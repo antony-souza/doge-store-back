@@ -25,6 +25,9 @@ export class CreateStoreDto {
   background_color: string;
 
   @IsString()
+  background_image?: Express.Multer.File;
+
+  @IsString()
   user_id: string;
 
   @IsOptional()

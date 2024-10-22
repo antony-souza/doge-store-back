@@ -15,8 +15,8 @@ import { StoreService } from "./store.service";
 import { JwtAuthGuard } from "src/jwt/auth.guard.service";
 import { Roles, RolesGuard } from "src/database/role.service";
 import { CreateStoreDto } from "./Dtos/create-store.dto";
-import { FileInterceptor } from "@nestjs/platform-express";
 import { UpdateStore } from "./Dtos/update-store.dto";
+import { FilesInterceptor } from "@nestjs/platform-express";
 
 @Controller("/store")
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -39,7 +39,7 @@ export class StoreController {
 
   @Roles("admin")
   @Post("/create")
-  @UseInterceptors(FileInterceptor("image_url"))
+  @UseInterceptors(FilesInterceptor("files", 2))
   async createStore(
     @UploadedFile() upload_file: Express.Multer.File,
     @Body() createStoreDto: CreateStoreDto,
@@ -47,12 +47,13 @@ export class StoreController {
     return this.storeService.createStore({
       ...createStoreDto,
       image_url: upload_file,
+      background_image: upload_file,
     });
   }
 
   @Roles("admin", "user")
   @Put("/update/:id")
-  @UseInterceptors(FileInterceptor("image_url"))
+  @UseInterceptors(FilesInterceptor("files", 2))
   async updateStore(
     @UploadedFile() upload_file: Express.Multer.File,
     @Param("id") id: string,
@@ -62,6 +63,7 @@ export class StoreController {
       ...updateStoreDto,
       id: id,
       image_url: upload_file,
+      background_image: upload_file,
     });
   }
 
