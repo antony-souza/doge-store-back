@@ -10,13 +10,17 @@ import {
   Put,
   Param,
   BadRequestException,
+  UploadedFiles,
 } from "@nestjs/common";
 import { StoreService } from "./store.service";
 import { JwtAuthGuard } from "src/jwt/auth.guard.service";
 import { Roles, RolesGuard } from "src/database/role.service";
 import { CreateStoreDto } from "./Dtos/create-store.dto";
 import { UpdateStore } from "./Dtos/update-store.dto";
-import { FileInterceptor, FilesInterceptor } from "@nestjs/platform-express";
+import {
+  FileFieldsInterceptor,
+  FilesInterceptor,
+} from "@nestjs/platform-express";
 
 @Controller("/store")
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -44,26 +48,36 @@ export class StoreController {
   ) {
     return this.storeService.createStore({
       ...createStoreDto,
-      image_url: upload_file,
+      image_url: upload_file[0],
     });
   }
 
   @Roles("admin", "user")
   @Put("/update/:id")
-  @UseInterceptors(FileInterceptor("image_url"))
+  @UseInterceptors(
+    FileFieldsInterceptor([
+      { name: "image_url", maxCount: 1 },
+      { name: "banner_url", maxCount: 1 },
+    ]),
+  )
   async updateStore(
-    @UploadedFile() upload_file: Express.Multer.File,
+    @UploadedFiles()
+    files: {
+      image_url?: Express.Multer.File[];
+      banner_url?: Express.Multer.File[];
+    },
     @Param("id") id: string,
     @Body() updateStoreDto: UpdateStore,
   ) {
-    if (!upload_file) {
+    if (!files) {
       throw new BadRequestException("Nenhum arquivo foi enviado.");
     }
 
     return this.storeService.updateStore({
       ...updateStoreDto,
       id: id,
-      image_url: upload_file,
+      image_url: files.image_url,
+      banner_url: files.banner_url,
     });
   }
 

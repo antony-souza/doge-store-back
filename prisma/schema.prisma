@@ -31,6 +31,7 @@ model Store {
   description              String
   is_open                  Boolean                    @default(true)
   image_url                String
+  banner_url               String                     @default("")
   background_color         String
   created_at               DateTime                   @default(now())
   updated_at               DateTime                   @default(now())

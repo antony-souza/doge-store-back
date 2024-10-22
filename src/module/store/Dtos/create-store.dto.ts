@@ -28,5 +28,8 @@ export class CreateStoreDto {
   user_id: string;
 
   @IsOptional()
-  image_url?: Express.Multer.File;
+  image_url?: Express.Multer.File[];
+
+  @IsOptional()
+  banner_url?: Express.Multer.File[];
 }
