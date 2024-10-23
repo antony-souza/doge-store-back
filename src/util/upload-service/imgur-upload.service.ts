@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
+import axios from "axios";
 import * as FormData from "form-data";
-import fetch from "node-fetch";
 import { IUploadFactoryService } from "./upload-service.interface";
 
 @Injectable()
@@ -11,33 +11,27 @@ export class ImgurUploadService implements IUploadFactoryService {
   private albumId: string = process.env.IMGUR_ALBUM_ID;
 
   private async refreshAccessToken(): Promise<void> {
-    const myHeaders = new Headers();
-    myHeaders.append("Content-Type", "application/x-www-form-urlencoded");
-
-    const formdata = new URLSearchParams();
-    formdata.append("refresh_token", this.refreshToken);
-    formdata.append("client_id", this.clientId);
-    formdata.append("grant_type", "refresh_token");
-
-    const requestOptions = {
-      method: "POST",
-      headers: myHeaders,
-      body: formdata,
-      redirect: "follow",
-    };
+    const formData = new URLSearchParams();
+    formData.append("refresh_token", this.refreshToken);
+    formData.append("client_id", this.clientId);
+    formData.append("grant_type", "refresh_token");
 
     try {
-      const response = await fetch(
+      const response = await axios.post(
         "https://api.imgur.com/oauth2/token",
-        requestOptions,
+        formData.toString(),
+        {
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
+        },
       );
-      const result = await response.json();
 
-      if (!response.ok) {
-        throw new Error(`Failed to refresh token: ${result.error}`);
+      if (response.status !== 200) {
+        throw new Error(`Failed to refresh token: ${response.data.error}`);
       }
 
-      this.accessToken = result.access_token;
+      this.accessToken = response.data.access_token;
     } catch (error) {
       throw new Error("Failed to refresh access token: " + error.message);
     }
@@ -48,46 +42,43 @@ export class ImgurUploadService implements IUploadFactoryService {
       throw new Error("No file provided for upload.");
     }
 
-    const myHeaders = new Headers();
-    myHeaders.append("Authorization", `Bearer ${this.accessToken}`);
-
-    const formdata = new FormData();
-    formdata.append("image", file.buffer, file.originalname);
-    formdata.append("type", "file");
-    formdata.append("title", "Doge Store - Images");
-    formdata.append("description", "Uploaded via API");
-    formdata.append("album", this.albumId);
-    formdata.append("privacy", "hidden");
-
-    const requestOptions = {
-      method: "POST",
-      headers: myHeaders,
-      body: formdata,
-      redirect: "follow",
-    };
+    const formData = new FormData();
+    formData.append("image", file.buffer, { filename: file.originalname });
+    formData.append("type", "file");
+    formData.append("title", "Doge Store - Images");
+    formData.append("description", "Uploaded via API");
+    formData.append("album", this.albumId);
+    formData.append("privacy", "hidden");
 
     try {
-      const response = await fetch(
+      const response = await axios.post(
         "https://api.imgur.com/3/image",
-        requestOptions,
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${this.accessToken}`,
+            ...formData.getHeaders(),
+          },
+        },
       );
-      const result = await response.json();
 
-      console.log("Imgur response:", result);
+      if (response.status === 200) {
+        console.log("Uploaded to imgur");
+      }
 
       if (
-        result.status === 403 &&
-        result.data.error === "The access token provided is invalid"
+        response.status === 403 &&
+        response.data.data.error === "The access token provided is invalid"
       ) {
         await this.refreshAccessToken();
         return this.upload(file);
       }
 
-      if (!response.ok) {
-        throw new Error(result.data.error);
+      if (response.status !== 200) {
+        throw new Error(response.data.data.error);
       }
 
-      return result.data.link;
+      return response.data.data.link;
     } catch (error) {
       throw new Error("Failed to upload image to Imgur: " + error.message);
     }
