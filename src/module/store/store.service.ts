@@ -24,6 +24,7 @@ export class StoreService {
         address: true,
         is_open: true,
         image_url: true,
+        banner_url: true,
         description: true,
         background_color: true,
       },
@@ -53,6 +54,7 @@ export class StoreService {
         name: true,
         phone: true,
         is_open: true,
+        banner_url: true,
         address: true,
         image_url: true,
         description: true,
@@ -75,7 +77,12 @@ export class StoreService {
     }
 
     let image_url = "";
-    image_url = await this.uploadFilService.upload(createStoreDto.image_url);
+    image_url = await this.uploadFilService.upload(createStoreDto.image_url[0]);
+
+    let banner_url = "";
+    banner_url = await this.uploadFilService.upload(
+      createStoreDto.banner_url[0],
+    );
 
     const createdStore = await this.prisma.store.create({
       data: {
@@ -83,6 +90,7 @@ export class StoreService {
         phone: createStoreDto.phone,
         address: createStoreDto.address,
         description: createStoreDto.description,
+        banner_url: banner_url,
         is_open: createStoreDto.is_open,
         background_color: createStoreDto.background_color,
         image_url: image_url,
@@ -122,7 +130,15 @@ export class StoreService {
     let url = existingStore.image_url;
 
     if (updateStoreDto.image_url) {
-      url = await this.uploadFilService.upload(updateStoreDto.image_url);
+      url = await this.uploadFilService.upload(updateStoreDto.image_url[0]);
+    }
+
+    let banner_url = existingStore.banner_url;
+
+    if (updateStoreDto.banner_url) {
+      banner_url = await this.uploadFilService.upload(
+        updateStoreDto.banner_url[0],
+      );
     }
 
     const updatedStore = await this.prisma.store.update({
@@ -130,6 +146,7 @@ export class StoreService {
       data: {
         ...updateStoreDto,
         image_url: url,
+        banner_url: banner_url,
       },
     });
 
