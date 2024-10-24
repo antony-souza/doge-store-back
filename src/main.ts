@@ -11,6 +11,7 @@ async function bootstrap() {
     origin: ["https://doge-store-front.vercel.app", "http://localhost:3000"],
     methods: "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS",
     credentials: true,
+    allowedHeaders: "Content-Type, Authorization, X-Requested-With",
   });
 
   await app.listen(PORT);
