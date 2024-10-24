@@ -8,12 +8,7 @@ async function bootstrap() {
 
   app.useGlobalPipes(new ValidationPipe());
 
-  app.enableCors({
-    origin: "https://doge-store-front.vercel.app",
-    methods: "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS",
-    credentials: true,
-    allowedHeaders: "Content-Type, Authorization, X-Requested-With, Accept",
-  });
+  app.enableCors();
 
   await app.listen(PORT);
   new Logger().log(`Server is Running: ${PORT}`, "SERVER");
