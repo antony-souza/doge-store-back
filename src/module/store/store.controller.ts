@@ -6,7 +6,6 @@ import {
   UseGuards,
   Get,
   UseInterceptors,
-  UploadedFile,
   Put,
   Param,
   BadRequestException,
@@ -17,10 +16,7 @@ import { JwtAuthGuard } from "src/jwt/auth.guard.service";
 import { Roles, RolesGuard } from "src/database/role.service";
 import { CreateStoreDto } from "./Dtos/create-store.dto";
 import { UpdateStore } from "./Dtos/update-store.dto";
-import {
-  FileFieldsInterceptor,
-  FilesInterceptor,
-} from "@nestjs/platform-express";
+import { FileFieldsInterceptor } from "@nestjs/platform-express";
 
 @Controller("/store")
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -41,14 +37,28 @@ export class StoreController {
 
   @Roles("admin")
   @Post("/create")
-  @UseInterceptors(FilesInterceptor("image_url"))
+  @UseInterceptors(
+    FileFieldsInterceptor([
+      { name: "image_url", maxCount: 1 },
+      { name: "banner_url", maxCount: 1 },
+    ]),
+  )
   async createStore(
-    @UploadedFile() upload_file: Express.Multer.File,
+    @UploadedFiles()
+    files: {
+      image_url?: Express.Multer.File[];
+      banner_url?: Express.Multer.File[];
+    },
     @Body() createStoreDto: CreateStoreDto,
   ) {
+    if (!files) {
+      throw new BadRequestException("Nenhum arquivo foi enviado.");
+    }
+
     return this.storeService.createStore({
       ...createStoreDto,
-      image_url: upload_file[0],
+      image_url: files.image_url,
+      banner_url: files.banner_url,
     });
   }
 
