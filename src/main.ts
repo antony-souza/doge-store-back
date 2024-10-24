@@ -7,11 +7,16 @@ async function bootstrap() {
   const PORT = process.env.PORT_1 || 4200;
 
   app.useGlobalPipes(new ValidationPipe());
+
   app.enableCors({
-    origin: ["https://doge-store-front.vercel.app", "http://localhost:3000"],
+    origin: [
+      "https://www.doge-store-front.vercel.app",
+      "https://doge-store-front.vercel.app",
+      "http://localhost:3000",
+    ],
     methods: "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS",
     credentials: true,
-    allowedHeaders: "Content-Type, Authorization, X-Requested-With",
+    allowedHeaders: "Content-Type, Authorization, X-Requested-With, Accept",
   });
 
   await app.listen(PORT);
