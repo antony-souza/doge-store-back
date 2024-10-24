@@ -7,11 +7,9 @@ async function bootstrap() {
   const PORT = process.env.PORT_1 || 4200;
 
   app.useGlobalPipes(new ValidationPipe());
-  app.enableCors();
-
-  /*   app.use("/", (req, res) => {
-    res.send("Hello World");
-  }); */
+  app.enableCors({
+    origin: ["https://doge-store-front.vercel.app", "http://localhost:3000"],
+  });
 
   await app.listen(PORT);
   new Logger().log(`Server is Running: ${PORT}`, "SERVER");
