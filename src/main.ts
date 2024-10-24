@@ -9,11 +9,7 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe());
 
   app.enableCors({
-    origin: [
-      "https://www.doge-store-front.vercel.app",
-      "https://doge-store-front.vercel.app",
-      "http://localhost:3000",
-    ],
+    origin: "https://doge-store-front.vercel.app",
     methods: "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS",
     credentials: true,
     allowedHeaders: "Content-Type, Authorization, X-Requested-With, Accept",
