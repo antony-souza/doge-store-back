@@ -62,10 +62,6 @@ export class ImgurUploadService implements IUploadFactoryService {
         },
       );
 
-      if (response.status === 200) {
-        console.log("Uploaded to imgur");
-      }
-
       if (
         response.status === 403 &&
         response.data.data.error === "The access token provided is invalid"
