@@ -3,16 +3,12 @@ import { AppModule } from "./app.module";
 import { Logger, ValidationPipe } from "@nestjs/common";
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, { bodyParser: true });
 
   app.enableCors({
     origin: [
       "https://doge-store-front.vercel.app",
       "https://antony-souza.online",
-      "https://api.imgur.com/3/image",
-      "https://i.imgur.com",
-      "api.qrserver.com",
-      "duckdevivery.s3.us-east-1.amazonaws.com",
     ],
     methods: "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS",
     allowedHeaders: "Content-Type, Authorization",
