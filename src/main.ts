@@ -5,11 +5,7 @@ import { Logger, ValidationPipe } from "@nestjs/common";
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  app.enableCors({
-    origin: "https://doge-store-front.vercel.app",
-    methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
-    credentials: true,
-  });
+  app.enableCors();
 
   const PORT = process.env.PORT_1 || 4200;
 
