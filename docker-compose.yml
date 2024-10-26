@@ -1,17 +1,45 @@
 version: '3.8'
 
 services:
-  doge_back:
+  doge_back_1:
     build:
       context: .  
       dockerfile: Dockerfile  
     restart: always
-    container_name: doge_store_back
+    container_name: doge_store_back_1
     working_dir: /app
     volumes:
       - .:/app  
     ports:
       - "4200:4200"  
+    env_file: 
+      - .env
+
+  doge_back_2:
+    build:
+      context: .  
+      dockerfile: Dockerfile  
+    restart: always
+    container_name: doge_store_back_2
+    working_dir: /app
+    volumes:
+      - .:/app  
+    ports:
+      - "4201:4200"  
+    env_file: 
+      - .env
+
+  doge_back_3_backup:
+    build:
+      context: .  
+      dockerfile: Dockerfile  
+    restart: always
+    container_name: doge_store_back_3_backup
+    working_dir: /app
+    volumes:
+      - .:/app  
+    ports:
+      - "4202:4200"  
     env_file: 
       - .env
 
