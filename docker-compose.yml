@@ -6,7 +6,7 @@ services:
       context: .  
       dockerfile: Dockerfile  
     restart: always
-    container_name: doge_store_back
+    container_name: doge_store_back_1
     working_dir: /app
     volumes:
       - .:/app  
@@ -20,7 +20,7 @@ services:
       context: .  
       dockerfile: Dockerfile  
     restart: always
-    container_name: doge_store_back
+    container_name: doge_store_back_2
     working_dir: /app
     volumes:
       - .:/app  
@@ -34,7 +34,7 @@ services:
       context: .  
       dockerfile: Dockerfile  
     restart: always
-    container_name: doge_store_back
+    container_name: doge_store_back_3_backup
     working_dir: /app
     volumes:
       - .:/app  
