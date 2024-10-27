@@ -2,7 +2,7 @@
 
 import { Logger, OnModuleDestroy, OnModuleInit } from "@nestjs/common";
 import { PrismaClient, Users } from "@prisma/client";
-import * as bcrypt from "bcrypt";
+import * as bcrypt from "bcryptjs";
 
 export class PrismaInitialService
   extends PrismaClient
