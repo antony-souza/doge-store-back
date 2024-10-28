@@ -1,4 +1,4 @@
-import { IsBoolean, IsOptional, IsString } from "class-validator";
+import { IsOptional, IsString } from "class-validator";
 
 export class CreateStoreDto {
   @IsString()
@@ -18,8 +18,7 @@ export class CreateStoreDto {
   description: string;
 
   @IsOptional()
-  @IsBoolean()
-  is_open: boolean;
+  is_open: string;
 
   @IsString()
   background_color: string;
