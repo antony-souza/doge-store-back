@@ -1,52 +1,16 @@
 services:
-  backend_1:
+  app_instance_0:
     build:
-      context: .  
-      dockerfile: Dockerfile  
+      context: .
+      dockerfile: Dockerfile
     restart: always
-    container_name: backend_1
-    working_dir: /app
-    volumes:
-      - .:/app  
+    container_name: instance_0
     ports:
-      - "4200:4200"  
-    env_file: 
+      - "4200:4200"
+    env_file:
       - .env
     networks:
       - backend_network
-
-  backend_2:
-    build:
-      context: .  
-      dockerfile: Dockerfile  
-    restart: always
-    container_name: backend_2
-    working_dir: /app
-    volumes:
-      - .:/app  
-    ports:
-      - "4201:4200"  
-    env_file: 
-      - .env
-    networks:
-      - backend_network
-
-  backend_backup:
-    build:
-      context: .  
-      dockerfile: Dockerfile  
-    restart: always
-    container_name: backend_backup
-    working_dir: /app
-    volumes:
-      - .:/app  
-    ports:
-      - "4202:4200"  
-    env_file: 
-      - .env
-    networks:
-      - backend_network
-
   nginx:
     build:
       dockerfile: nginx/nginx.dockerfile
@@ -57,15 +21,9 @@ services:
     ports:
       - "80:80"
     depends_on:
-      - backend_1
-      - backend_2
-      - backend_backup
+      - app_instance_0
     networks:
       - backend_network
-
-volumes:
-  doge_store_back:
-
 networks:
   backend_network:
     driver: bridge
