@@ -107,7 +107,6 @@ export class ProductService {
     }
 
     const isFeaturedProduct = updateProductDto.featured_products === "true";
-    const cart = updateProductDto.cart === "true";
 
     return await this.prismaService.product.update({
       where: {
@@ -118,7 +117,6 @@ export class ProductService {
         image_url: [url],
         price: price,
         featured_products: isFeaturedProduct,
-        cart: cart,
       },
     });
   }
