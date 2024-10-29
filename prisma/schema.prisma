@@ -1,5 +1,5 @@
 generator client {
-  provider = "prisma-client-js"
+  provider      = "prisma-client-js"
   binaryTargets = ["native", "debian-openssl-3.0.x"]
 }
 
@@ -9,14 +9,14 @@ datasource db {
 }
 
 model Users {
-  id        String  @id @default(uuid())
-  name      String
-  email     String  @unique
-  password  String
-  role      Role    @default(user)
-  image_url String  @default("")
-  store_id  String?
-  store     Store?  @relation("StoreUsers", fields: [store_id], references: [id])
+  id         String   @id @default(uuid())
+  name       String
+  email      String   @unique
+  password   String
+  role       Role     @default(user)
+  image_url  String   @default("")
+  store_id   String?
+  store      Store?   @relation("StoreUsers", fields: [store_id], references: [id])
   created_at DateTime @default(now())
   updated_at DateTime @default(now())
 
@@ -72,7 +72,7 @@ model Product {
   category                 Category                   @relation(fields: [category_id], references: [id])
   store                    Store                      @relation(fields: [store_id], references: [id])
   ProductAndAddtionalDishe ProductAndAddtionalDishe[]
-  featured_products         Boolean?                   @default(false)
+  featured_products        Boolean?                   @default(false)
 
   @@map("product")
 }
