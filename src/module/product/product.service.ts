@@ -11,7 +11,7 @@ import UploadFileFactoryService from "src/util/upload-service/upload-file.servic
 @Injectable()
 export class ProductService {
   constructor(
-    private readonly prismaService: PrismaService,
+    public readonly prismaService: PrismaService,
     private readonly UploadFileFactoryService: UploadFileFactoryService,
   ) {}
 
@@ -107,6 +107,7 @@ export class ProductService {
     }
 
     const isFeaturedProduct = updateProductDto.featured_products === "true";
+    const cart = updateProductDto.cart === "true";
 
     return await this.prismaService.product.update({
       where: {
@@ -115,8 +116,9 @@ export class ProductService {
       data: {
         ...updateProductDto,
         image_url: [url],
-        price,
+        price: price,
         featured_products: isFeaturedProduct,
+        cart: cart,
       },
     });
   }
