@@ -84,6 +84,7 @@ export class StoreService {
       createStoreDto.banner_url[0],
     );
 
+    const isOpen = createStoreDto.is_open === "true";
     const createdStore = await this.prisma.store.create({
       data: {
         name: createStoreDto.name,
@@ -91,7 +92,7 @@ export class StoreService {
         address: createStoreDto.address,
         description: createStoreDto.description,
         banner_url: banner_url,
-        is_open: createStoreDto.is_open,
+        is_open: isOpen,
         background_color: createStoreDto.background_color,
         image_url: image_url,
         users: {
@@ -140,13 +141,14 @@ export class StoreService {
         updateStoreDto.banner_url[0],
       );
     }
-
+    const isOpen = updateStoreDto.is_open === "true";
     const updatedStore = await this.prisma.store.update({
       where: { id: updateStoreDto.id },
       data: {
         ...updateStoreDto,
         image_url: url,
         banner_url: banner_url,
+        is_open: isOpen,
       },
     });
 
