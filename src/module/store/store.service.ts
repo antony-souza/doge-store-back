@@ -27,13 +27,19 @@ export class StoreService {
         banner_url: true,
         description: true,
         background_color: true,
+        users: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
       },
     });
 
     return store;
   }
 
-  //Mapear os dados do store na interface do client
+  //Mapear os dados do store na interface
   async getStoreClient(id: string) {
     const existingStore = await this.prisma.store.count({
       where: {
