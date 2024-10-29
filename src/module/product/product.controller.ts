@@ -18,11 +18,11 @@ import { JwtAuthGuard } from "src/jwt/auth.guard.service";
 import { FileInterceptor } from "@nestjs/platform-express";
 
 @Controller("/product")
-@Roles("admin", "user")
 @UseGuards(JwtAuthGuard, RolesGuard)
 export class ProductController {
   constructor(private readonly productService: ProductService) {}
 
+  @Roles("admin", "user")
   @Post("/create/:id")
   @UseInterceptors(FileInterceptor("image_url"))
   create(
@@ -37,11 +37,13 @@ export class ProductController {
     });
   }
 
+  @Roles("admin", "user")
   @Get("/search/:id")
   findAll(@Param("id") id: string) {
     return this.productService.findAll(id);
   }
 
+  @Roles("admin", "user")
   @Get(":id")
   findOne(@Param("id") id: string) {
     return this.productService.findOne(id);

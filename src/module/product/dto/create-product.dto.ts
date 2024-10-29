@@ -26,5 +26,9 @@ export class CreateProductDto {
   @IsOptional()
   featured_products?: string;
 
+  @IsString()
+  @IsOptional()
+  cart?: string;
+
   image_url: Express.Multer.File;
 }
