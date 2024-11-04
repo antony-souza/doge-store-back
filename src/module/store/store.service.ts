@@ -167,31 +167,19 @@ export class StoreService {
   async deleteStoreAndRelationships(id: string) {
     const store = await this.prisma.store.findUnique({
       where: { id },
-      include: {
-        category: true,
-        product: true,
-        ProductAndAddtionalDishe: true,
-      },
     });
 
     if (!store) {
       throw new NotFoundException("Store not found");
     }
 
-    await this.prisma.productAndAddtionalDishe.deleteMany({
-      where: { store_id: id },
-    });
-
-    await this.prisma.product.deleteMany({
-      where: { store_id: id },
-    });
-
-    await this.prisma.category.deleteMany({
-      where: { store_id: id },
-    });
-
     await this.prisma.store.delete({
       where: { id },
+      include: {
+        category: true,
+        product: true,
+        ProductAndAddtionalDishe: true,
+      },
     });
 
     return {
