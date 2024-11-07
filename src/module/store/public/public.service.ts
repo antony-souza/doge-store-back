@@ -17,6 +17,9 @@ export class PublicService {
           },
         },
         product: {
+          where: {
+            enabled: true,
+          },
           select: {
             id: true,
             name: true,

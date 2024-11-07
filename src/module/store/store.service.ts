@@ -136,8 +136,6 @@ export class StoreService {
 
     let url = existingStore.image_url;
 
-    console.log("teste");
-
     if (updateStoreDto.image_url) {
       url = await this.uploadFilService.upload(updateStoreDto.image_url[0]);
     }
