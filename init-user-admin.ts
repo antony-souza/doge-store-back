@@ -25,7 +25,7 @@ async function main() {
   const prismaService = new PrismaInitialService();
 
   const userDefault: Users = {
-    name: "Admin Duck",
+    name: "DogeAdmin",
     email: "admin@duck.com",
     role: "admin",
     id: "1",

@@ -1,29 +1,43 @@
 services:
-  app_instance_0:
-    build:
-      context: .
-      dockerfile: Dockerfile
+  postgres:
+    image: postgres:latest
+    container_name: postgres
     restart: always
-    container_name: instance_0
     ports:
-      - "4200:4200"
+      - "5432:5432"
     env_file:
       - .env
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
     networks:
       - backend_network
-  nginx:
-    build:
-      dockerfile: nginx/nginx.dockerfile
-      context: .
-    image: nginx
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: pgadmin
     restart: always
-    container_name: nginx
     ports:
-      - "80:80"
+      - "55432:80"
+    env_file:
+      - .env
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
     depends_on:
-      - app_instance_0
+      - postgres
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
     networks:
       - backend_network
+
 networks:
   backend_network:
     driver: bridge
+
+volumes:
+  postgres_data:
+  pgadmin_data:
