@@ -1,4 +1,31 @@
 services:
+  app_instance_0:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    container_name: app_instance_0
+    restart: always
+    ports:
+      - "4200:4200"
+    env_file:
+      - .env
+    networks:
+      - backend_network
+
+  nginx:
+    build:
+      dockerfile: nginx/nginx.dockerfile
+      context: .
+    image: nginx
+    restart: always
+    container_name: nginx
+    ports:
+      - "80:80"
+    depends_on:
+      - app_instance_0
+    networks:
+      - backend_network
+
   postgres:
     image: postgres:latest
     container_name: postgres
