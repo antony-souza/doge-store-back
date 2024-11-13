@@ -14,11 +14,11 @@ model Users {
   email      String   @unique
   password   String
   role       Role     @default(user)
-  image_url  String   @default("")
   store_id   String?
-  store      Store?   @relation("StoreUsers", fields: [store_id], references: [id])
+  image_url  String   @default("")
   created_at DateTime @default(now())
   updated_at DateTime @default(now())
+  store      Store?   @relation("StoreUsers", fields: [store_id], references: [id])
 
   @@index([store_id])
   @@map("users")
@@ -27,19 +27,19 @@ model Users {
 model Store {
   id                       String                     @id @default(uuid())
   name                     String
-  phone                    String
   address                  String
   description              String
-  is_open                  Boolean                    @default(true)
   image_url                String
+  phone                    String
   banner_url               String                     @default("")
-  background_color         String
+  close_time               String                     @default("00:00")
+  open_time                String                     @default("00:00")
   created_at               DateTime                   @default(now())
   updated_at               DateTime                   @default(now())
-  users                    Users[]                    @relation("StoreUsers")
   category                 Category[]
   product                  Product[]
   ProductAndAddtionalDishe ProductAndAddtionalDishe[]
+  users                    Users[]                    @relation("StoreUsers")
 
   @@map("store")
 }
@@ -68,11 +68,11 @@ model Product {
   category_id              String
   enabled                  Boolean                    @default(true)
   image_url                String[]                   @default([])
+  featured_product         Boolean                    @default(false)
   store_id                 String
   category                 Category                   @relation(fields: [category_id], references: [id])
   store                    Store                      @relation(fields: [store_id], references: [id])
   ProductAndAddtionalDishe ProductAndAddtionalDishe[]
-  featured_products        Boolean?                   @default(false)
 
   @@map("product")
 }

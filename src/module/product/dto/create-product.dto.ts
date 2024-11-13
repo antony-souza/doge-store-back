@@ -22,7 +22,7 @@ export class CreateProductDto {
 
   @IsString()
   @IsOptional()
-  featured_products?: string;
+  featured_product?: string;
 
   image_url: Express.Multer.File;
 }

@@ -26,7 +26,6 @@ export class StoreController {
   @Roles("admin", "user")
   @Get("/store-client/:id")
   async getStoreClient(@Param("id") id: string) {
-    console.log("id", id);
     return this.storeService.getStoreClient(id);
   }
 

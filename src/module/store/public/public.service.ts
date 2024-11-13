@@ -27,7 +27,8 @@ export class PublicService {
             description: true,
             image_url: true,
             category_id: true,
-            featured_products: true,
+            enabled: true,
+            featured_product: true,
           },
         },
       },
@@ -38,5 +39,42 @@ export class PublicService {
     }
 
     return store;
+  }
+
+  async getFeaturedProducts(id: string) {
+    const existingStore = await this.prisma.store.count({
+      where: {
+        id: id,
+      },
+    });
+
+    if (existingStore === 0) {
+      throw new NotFoundException("Loja não encontrada");
+    }
+
+    const featuredProducts = await this.prisma.product.findMany({
+      where: {
+        store_id: id,
+        featured_product: true,
+      },
+      select: {
+        id: true,
+        name: true,
+        price: true,
+        description: true,
+        image_url: true,
+        store: {
+          select: {
+            name: true,
+          },
+        },
+      },
+    });
+
+    if (!featuredProducts) {
+      throw new NotFoundException("Nenhum produto destacado encontrado");
+    }
+
+    return featuredProducts;
   }
 }
