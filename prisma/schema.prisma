@@ -68,7 +68,7 @@ model Product {
   category_id              String
   enabled                  Boolean                    @default(true)
   image_url                String[]                   @default([])
-  featured_product         Boolean                    @default(false)
+  promotion                Boolean                    @default(false)
   store_id                 String
   category                 Category                   @relation(fields: [category_id], references: [id])
   store                    Store                      @relation(fields: [store_id], references: [id])

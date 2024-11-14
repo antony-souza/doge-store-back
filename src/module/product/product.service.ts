@@ -106,7 +106,7 @@ export class ProductService {
       price = Number(updateProductDto.price);
     }
 
-    const isFeaturedProduct = updateProductDto.featured_product === "true";
+    const promotionProduct = updateProductDto.promotion === "true";
 
     return await this.prismaService.product.update({
       where: {
@@ -116,7 +116,7 @@ export class ProductService {
         ...updateProductDto,
         image_url: [url],
         price: price,
-        featured_product: isFeaturedProduct,
+        promotion: promotionProduct,
       },
     });
   }
@@ -156,7 +156,7 @@ export class ProductService {
     const featuredProducts = await this.prismaService.product.findMany({
       where: {
         store_id: id,
-        featured_product: true,
+        promotion: true,
       },
       select: {
         id: true,

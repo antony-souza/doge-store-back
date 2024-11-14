@@ -28,7 +28,7 @@ export class PublicService {
             image_url: true,
             category_id: true,
             enabled: true,
-            featured_product: true,
+            promotion: true,
           },
         },
       },
@@ -41,7 +41,7 @@ export class PublicService {
     return store;
   }
 
-  async getFeaturedProducts(id: string) {
+  /* async getFeaturedProducts(id: string) {
     const existingStore = await this.prisma.store.count({
       where: {
         id: id,
@@ -55,7 +55,7 @@ export class PublicService {
     const featuredProducts = await this.prisma.product.findMany({
       where: {
         store_id: id,
-        featured_product: true,
+        promotion: true,
       },
       select: {
         id: true,
@@ -76,5 +76,5 @@ export class PublicService {
     }
 
     return featuredProducts;
-  }
+  } */
 }
