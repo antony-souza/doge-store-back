@@ -1,5 +1,6 @@
 import { Controller, Get, Param, Query } from "@nestjs/common";
 import { PublicService } from "./public.service";
+import { UpdateCategoryDto } from "src/module/category/dto/update-category.dto";
 
 @Controller("/public")
 export class PublicController {
@@ -10,8 +11,21 @@ export class PublicController {
     return this.publicService.getStoreByName(name);
   }
 
-  @Get("/featured/:id")
-  getFeaturedProducts(@Param("id") id: string) {
-    return this.publicService.getFeaturedProducts(id);
+  //teste Http Angular
+  @Get("/stores")
+  async getAllStores() {
+    return this.publicService.getAllStores();
+  }
+
+  @Get("/search/product/:categoryId/:storeId")
+  getAllProductsByCategoryId(
+    @Param("categoryId") categoryId: string,
+    @Param("storeId") storeId: string,
+  ) {
+    const categoryDto: UpdateCategoryDto = {
+      id: categoryId,
+      store_id: storeId,
+    };
+    return this.publicService.getAllProductsByCategoryId(categoryDto);
   }
 }

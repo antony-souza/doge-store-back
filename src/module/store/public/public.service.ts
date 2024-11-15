@@ -1,5 +1,6 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { PrismaService } from "src/database/prisma.service";
+import { UpdateCategoryDto } from "src/module/category/dto/update-category.dto";
 
 @Injectable()
 export class PublicService {
@@ -77,4 +78,48 @@ export class PublicService {
 
     return featuredProducts;
   } */
+  async getAllStores() {
+    const stores = await this.prisma.store.findMany({
+      select: {
+        id: true,
+        name: true,
+      },
+    });
+    return stores;
+  }
+
+  async getAllProductsByCategoryId(dto: UpdateCategoryDto) {
+    const existingCategory = await this.prisma.category.count({
+      where: {
+        id: dto.id,
+        store_id: dto.store_id,
+      },
+    });
+
+    if (existingCategory === 0) {
+      throw new NotFoundException("Categoria ou Loja não encontrada");
+    }
+
+    return await this.prisma.product.findMany({
+      where: {
+        category_id: dto.id,
+        store_id: dto.store_id,
+        enabled: true,
+      },
+      select: {
+        id: true,
+        name: true,
+        price: true,
+        description: true,
+        image_url: true,
+        promotion: true,
+        category: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+      },
+    });
+  }
 }
