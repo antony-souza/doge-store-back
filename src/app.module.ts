@@ -7,6 +7,7 @@ import { JwtModule } from "@nestjs/jwt";
 import { AuthModule } from "./module/auth/auth.module";
 import { CategoryModule } from "./module/category/category.module";
 import { ProductModule } from "./module/product/product.module";
+import { QrcodeModule } from "./module/qrcode/qrcode.module";
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { ProductModule } from "./module/product/product.module";
     AuthModule,
     CategoryModule,
     ProductModule,
+    QrcodeModule,
     ConfigModule.forRoot({
       isGlobal: true,
     }),
