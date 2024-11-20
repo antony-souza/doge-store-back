@@ -42,47 +42,17 @@ export class PublicService {
     return store;
   }
 
-  /* async getFeaturedProducts(id: string) {
-    const existingStore = await this.prisma.store.count({
-      where: {
-        id: id,
-      },
-    });
-
-    if (existingStore === 0) {
-      throw new NotFoundException("Loja não encontrada");
-    }
-
-    const featuredProducts = await this.prisma.product.findMany({
-      where: {
-        store_id: id,
-        promotion: true,
-      },
-      select: {
-        id: true,
-        name: true,
-        price: true,
-        description: true,
-        image_url: true,
-        store: {
-          select: {
-            name: true,
-          },
-        },
-      },
-    });
-
-    if (!featuredProducts) {
-      throw new NotFoundException("Nenhum produto destacado encontrado");
-    }
-
-    return featuredProducts;
-  } */
   async getAllStores() {
     const stores = await this.prisma.store.findMany({
       select: {
         id: true,
         name: true,
+        address: true,
+        phone: true,
+        image_url: true,
+        open_time: true,
+        close_time: true,
+        description: true,
       },
     });
     return stores;
