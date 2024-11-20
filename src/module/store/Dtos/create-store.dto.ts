@@ -17,11 +17,11 @@ export class CreateStoreDto {
   @IsString()
   description: string;
 
-  @IsOptional()
-  is_open: string;
+  @IsString()
+  open_time: string;
 
   @IsString()
-  background_color: string;
+  close_time: string;
 
   @IsString()
   user_id: string;

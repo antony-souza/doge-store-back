@@ -11,6 +11,7 @@ import UploadFileFactoryService from "src/util/upload-service/upload-file.servic
     CategoryService,
     PrismaService,
     AuthJwtService,
+    CategoryService,
     UploadFileFactoryService,
   ],
 })

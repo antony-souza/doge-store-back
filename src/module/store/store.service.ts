@@ -22,11 +22,11 @@ export class StoreService {
         name: true,
         phone: true,
         address: true,
-        is_open: true,
+        open_time: true,
+        close_time: true,
         image_url: true,
         banner_url: true,
         description: true,
-        background_color: true,
         users: {
           select: {
             id: true,
@@ -59,12 +59,12 @@ export class StoreService {
         id: true,
         name: true,
         phone: true,
-        is_open: true,
+        open_time: true,
+        close_time: true,
         banner_url: true,
         address: true,
         image_url: true,
         description: true,
-        background_color: true,
       },
     });
 
@@ -90,16 +90,15 @@ export class StoreService {
       createStoreDto.banner_url[0],
     );
 
-    const isOpen = createStoreDto.is_open === "true";
     const createdStore = await this.prisma.store.create({
       data: {
         name: createStoreDto.name,
         phone: createStoreDto.phone,
         address: createStoreDto.address,
+        open_time: createStoreDto.open_time,
+        close_time: createStoreDto.close_time,
         description: createStoreDto.description,
         banner_url: banner_url,
-        is_open: isOpen,
-        background_color: createStoreDto.background_color,
         image_url: image_url,
         users: {
           connect: {
@@ -147,14 +146,12 @@ export class StoreService {
         updateStoreDto.banner_url[0],
       );
     }
-    const isOpen = updateStoreDto.is_open === "true";
     const updatedStore = await this.prisma.store.update({
       where: { id: updateStoreDto.id },
       data: {
         ...updateStoreDto,
         image_url: url,
         banner_url: banner_url,
-        is_open: isOpen,
       },
     });
 

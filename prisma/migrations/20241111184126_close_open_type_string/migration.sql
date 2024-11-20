@@ -1,0 +1,5 @@
+-- AlterTable
+ALTER TABLE "store" ALTER COLUMN "close_time" SET DEFAULT '00:00',
+ALTER COLUMN "close_time" SET DATA TYPE TEXT,
+ALTER COLUMN "open_time" SET DEFAULT '00:00',
+ALTER COLUMN "open_time" SET DATA TYPE TEXT;
