@@ -2,7 +2,6 @@ import { NestFactory } from "@nestjs/core";
 import { AppModule } from "./app.module";
 import { Logger, ValidationPipe } from "@nestjs/common";
 import { environment } from "./environment/environment";
-import { connectRedis } from "./providers/redis/redis-client";
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -15,7 +14,6 @@ async function bootstrap() {
 
   app.useGlobalPipes(new ValidationPipe());
 
-  await connectRedis();
   await app.listen(environment.port);
   new Logger().log(`Server is Running: ${environment.port}`, "SERVER");
 }
