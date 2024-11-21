@@ -60,6 +60,18 @@ services:
       - pgadmin_data:/var/lib/pgadmin
     networks:
       - backend_network
+  
+  redis_cache:
+    container_name: dogestore-redis-cache
+    image: redis:alpine
+    restart: always
+    env_file:
+      -  .env
+    ports:
+      - "${REDIS_CACHE_PORT}:6379"
+    command: redis-server --requirepass ${REDIS_CACHE_PASSWORD}
+    networks:
+      - backend_network
 
 networks:
   backend_network:
