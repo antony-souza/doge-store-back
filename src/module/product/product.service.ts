@@ -6,8 +6,8 @@ import {
 import { CreateProductDto } from "./dto/create-product.dto";
 import { UpdateProductDto } from "./dto/update-product.dto";
 import UploadFileFactoryService from "src/util/upload-service/upload-file.service";
-import ProductRepository from "./repositorie/product-repository";
-import { Product } from "./entities/product.entity";
+import ProductRepository from "../../repositories/product-repository";
+import { ProductEntity } from "./entities/product.entity";
 import { PrismaClient } from "@prisma/client";
 
 @Injectable()
@@ -61,40 +61,29 @@ export class ProductService {
     });
   }
 
-  /* async findAll(id: string) {
-    return await this.prismaService.product.findMany({
-      where: {
-        store_id: id,
-        enabled: true,
-      },
-      include: {
-        category: {
-          select: {
-            name: true,
-          },
-        },
-      },
-    });
-  } */
-
-  findMany(storeId: string): Promise<Product[]> {
+  findMany(dto: UpdateProductDto): Promise<ProductEntity[]> {
     const existingStore = this.prismaService.store.count({
       where: {
-        id: storeId,
+        id: dto.id,
       },
     });
     if (!existingStore) {
       throw new NotFoundException("Store not found");
     }
-    return this.productRepository.findMany(storeId);
+    return this.productRepository.findMany(dto);
   }
 
-  async findOne(id: string) {
-    return await this.prismaService.product.findFirst({
+  findOne(dto: UpdateProductDto): Promise<ProductEntity> {
+    const existingProduct = this.prismaService.product.count({
       where: {
-        id,
+        id: dto.id,
+        store_id: dto.store_id,
       },
     });
+    if (!existingProduct) {
+      throw new NotFoundException("Product not found");
+    }
+    return this.productRepository.findOne(dto);
   }
 
   async update(updateProductDto: UpdateProductDto) {

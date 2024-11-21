@@ -38,15 +38,25 @@ export class ProductController {
   }
 
   @Roles("admin", "user")
-  @Get("/search/:id")
-  findAll(@Param("id") id: string) {
-    return this.productService.findMany(id);
+  @Get("/search/:storeId")
+  findAll(@Param("storeId") storeId: string) {
+    const productDto: UpdateProductDto = {
+      id: storeId,
+    };
+    return this.productService.findMany(productDto);
   }
 
   @Roles("admin", "user")
-  @Get(":id")
-  findOne(@Param("id") id: string) {
-    return this.productService.findOne(id);
+  @Get("/search/:productId/:storeId")
+  findOne(
+    @Param("productId") productId: string,
+    @Param("storeId") storeId: string,
+  ) {
+    const productDto: UpdateProductDto = {
+      id: productId,
+      store_id: storeId,
+    };
+    return this.productService.findOne(productDto);
   }
 
   @Put("/update/:id")
