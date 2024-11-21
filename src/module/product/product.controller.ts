@@ -40,7 +40,7 @@ export class ProductController {
   @Roles("admin", "user")
   @Get("/search/:id")
   findAll(@Param("id") id: string) {
-    return this.productService.findAll(id);
+    return this.productService.findMany(id);
   }
 
   @Roles("admin", "user")

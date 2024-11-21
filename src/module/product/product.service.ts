@@ -5,14 +5,17 @@ import {
 } from "@nestjs/common";
 import { CreateProductDto } from "./dto/create-product.dto";
 import { UpdateProductDto } from "./dto/update-product.dto";
-import { PrismaService } from "src/database/prisma.service";
 import UploadFileFactoryService from "src/util/upload-service/upload-file.service";
+import ProductRepository from "./repositorie/product-repository";
+import { Product } from "./entities/product.entity";
+import { PrismaClient } from "@prisma/client";
 
 @Injectable()
 export class ProductService {
   constructor(
-    public readonly prismaService: PrismaService,
+    public readonly prismaService: PrismaClient,
     private readonly UploadFileFactoryService: UploadFileFactoryService,
+    private readonly productRepository: ProductRepository,
   ) {}
 
   async create(createProductDto: CreateProductDto) {
@@ -58,7 +61,7 @@ export class ProductService {
     });
   }
 
-  async findAll(id: string) {
+  /* async findAll(id: string) {
     return await this.prismaService.product.findMany({
       where: {
         store_id: id,
@@ -72,6 +75,18 @@ export class ProductService {
         },
       },
     });
+  } */
+
+  findMany(storeId: string): Promise<Product[]> {
+    const existingStore = this.prismaService.store.count({
+      where: {
+        id: storeId,
+      },
+    });
+    if (!existingStore) {
+      throw new NotFoundException("Store not found");
+    }
+    return this.productRepository.findMany(storeId);
   }
 
   async findOne(id: string) {

@@ -18,6 +18,7 @@ async function bootstrap() {
   await connectRedis();
   await app.listen(environment.port);
   new Logger().log(`Server is Running: ${environment.port}`, "SERVER");
+  new Logger().log(`Redis is Running: ${environment.redisCachePort}`, "REDIS");
 }
 
 bootstrap();
