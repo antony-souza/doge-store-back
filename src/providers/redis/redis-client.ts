@@ -14,6 +14,14 @@ export class RedisClient extends Redis {
     });
   }
 
+  getValue(key: string): Promise<string> {
+    return this.get(key);
+  }
+
+  setValue(key: string, value: string): Promise<string> {
+    return this.set(key, value, "EX", 15);
+  }
+
   async testConnection(): Promise<void> {
     try {
       await this.ping();
