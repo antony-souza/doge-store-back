@@ -73,9 +73,13 @@ export class ProductController {
     });
   }
 
+  @Roles("admin", "user")
   @Delete("/delete/:id")
   remove(@Param("id") id: string) {
-    return this.productService.remove(id);
+    const dto: UpdateProductDto = {
+      id: id,
+    };
+    return this.productService.remove(dto);
   }
 
   @Get("/featured/:id")

@@ -21,8 +21,12 @@ export default class RedisClient extends Redis {
     return value ? JSON.parse(value) : null;
   }
 
-  setValue(key: string, value: string): Promise<string> {
-    return this.set(key, JSON.stringify(value), "EX", 15);
+  setValue(key: string, value: string, timeExp: number): Promise<string> {
+    return this.set(key, JSON.stringify(value), "EX", timeExp);
+  }
+
+  delValue(key: string): Promise<number> {
+    return this.del(key);
   }
 
   async testConnection(): Promise<void> {
@@ -36,6 +40,6 @@ export default class RedisClient extends Redis {
   }
 }
 
-export const connectRedis = async (): Promise<void> => {
+export const connectRedisCache = async (): Promise<void> => {
   await new RedisClient().testConnection();
 };

@@ -9,6 +9,7 @@ import { PrismaClient } from "@prisma/client";
 
 @Module({
   controllers: [ProductController],
+  imports: [],
   providers: [
     ProductService,
     AuthJwtService,
