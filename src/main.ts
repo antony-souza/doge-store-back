@@ -15,10 +15,10 @@ async function bootstrap() {
 
   app.useGlobalPipes(new ValidationPipe());
 
-  await connectRedisCache();
   await app.listen(environment.port);
   new Logger().log(`Server is Running: ${environment.port}`, "SERVER");
-  new Logger().log(`Redis is Running: ${environment.redisCachePort}`, "REDIS");
+  await connectRedisCache();
+  new Logger().log(`Redis is Running: ${environment.redisCachePort}`, "RedisClient");
 }
 
 bootstrap();

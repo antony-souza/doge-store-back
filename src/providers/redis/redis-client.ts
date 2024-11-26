@@ -32,9 +32,9 @@ export default class RedisClient extends Redis {
   async testConnection(): Promise<void> {
     try {
       await this.ping();
-      this.logger.log("Redis connected successfully!", "REDIS");
+      this.logger.log("Redis connected successfully!");
     } catch (error) {
-      this.logger.error("Redis connection failed!", "REDIS");
+      this.logger.error("Redis connection failed!");
       throw error;
     }
   }
