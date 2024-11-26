@@ -5,8 +5,7 @@ import UploadFileFactoryService from "src/util/upload-service/upload-file.servic
 import { CategoryRepository } from "src/repositories/category-repository";
 import { PrismaClient } from "@prisma/client";
 import RedisClient from "src/providers/redis/redis-client";
-
-
+import { CategoryEntity } from "./entities/category.entity";
 
 @Injectable()
 export class CategoryService {
@@ -36,7 +35,10 @@ export class CategoryService {
     return response;
   }
 
-  async findAllCategoryByStoreId(dto: UpdateCategoryDto) {
+  async findAllCategoryByStoreId(dto: UpdateCategoryDto): Promise<CategoryEntity[]> {
+
+    const cacheKey = `store:${dto.store_id}:categories`;
+    const cacheData = await this.redisClient.getValue(cacheKey);
 
     const existingStore = await this.prismaService.store.count({
       where: {
@@ -48,11 +50,8 @@ export class CategoryService {
       throw new NotFoundException("Store not found");
     }
 
-    const cacheKey = `store:${dto.store_id}:categories`;
-    const cacheData = await this.redisClient.getValue(cacheKey);
-
     if (cacheData) {
-      return JSON.stringify(cacheData);
+      return JSON.parse(cacheData);
     }
 
     const response = await this.categoryRepository.findMany(dto);

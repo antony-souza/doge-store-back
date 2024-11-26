@@ -4,7 +4,6 @@ import {
 import { ProductEntity } from "../module/product/entities/product.entity";
 import { PrismaClient } from "@prisma/client";
 import { UpdateProductDto } from "src/module/product/dto/update-product.dto";
-import { CreateProductDto } from "src/module/product/dto/create-product.dto";
 
 @Injectable()
 export default class ProductRepository {

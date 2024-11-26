@@ -2,7 +2,6 @@ import { Module } from "@nestjs/common";
 import { PublicService } from "./public.service";
 import { PublicController } from "./public.controller";
 import { PrismaService } from "src/database/prisma.service";
-import { StoreService } from "../store.service";
 import UploadFileFactoryService from "src/util/upload-service/upload-file.service";
 import { ImgurUploadService } from "src/util/upload-service/imgur-upload.service";
 
@@ -11,7 +10,6 @@ import { ImgurUploadService } from "src/util/upload-service/imgur-upload.service
   providers: [
     PublicService,
     PrismaService,
-    StoreService,
     UploadFileFactoryService,
     ImgurUploadService,
   ],

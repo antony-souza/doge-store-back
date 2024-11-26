@@ -7,36 +7,22 @@ import { PrismaService } from "src/database/prisma.service";
 import { CreateStoreDto } from "./Dtos/create-store.dto";
 import UploadFileFactoryService from "src/util/upload-service/upload-file.service";
 import { UpdateStore } from "./Dtos/update-store.dto";
+import { StoreRepository } from "src/repositories/store-repository";
+import RedisClient from "src/providers/redis/redis-client";
 
 @Injectable()
 export class StoreService {
   constructor(
     private readonly prisma: PrismaService,
+    private readonly storeRepository: StoreRepository,
+    private readonly redisClient: RedisClient,
     private readonly uploadFilService: UploadFileFactoryService,
-  ) {}
+  ) { }
 
   async getAllStore() {
-    const store = await this.prisma.store.findMany({
-      select: {
-        id: true,
-        name: true,
-        phone: true,
-        address: true,
-        open_time: true,
-        close_time: true,
-        image_url: true,
-        banner_url: true,
-        description: true,
-        users: {
-          select: {
-            id: true,
-            name: true,
-          },
-        },
-      },
-    });
 
-    return store;
+    return await this.storeRepository.findMany();
+    
   }
 
   //Mapear os dados do store na interface

@@ -1,6 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { PrismaClient } from "@prisma/client";
 import { UpdateCategoryDto } from "src/module/category/dto/update-category.dto";
+import { CategoryEntity } from "src/module/category/entities/category.entity";
 
 @Injectable()
 export class CategoryRepository {
@@ -10,7 +11,7 @@ export class CategoryRepository {
     return "Create category";
   }
 
-  async findMany(dto: UpdateCategoryDto) {
+  async findMany(dto: UpdateCategoryDto):Promise<CategoryEntity[]> {
 
     return await this.prismaService.category.findMany({
       where: {
@@ -21,6 +22,7 @@ export class CategoryRepository {
         id: true,
         name: true,
         image_url: true,
+        store_id: true,
       }
     })
   }

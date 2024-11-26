@@ -18,11 +18,11 @@ export default class RedisClient extends Redis {
   async getValue(key: string): Promise<string> {
     const value = await this.get(key);
 
-    return value ? JSON.parse(value) : null;
+    return value;
   }
 
-  setValue(key: string, value: string, timeExp: number): Promise<string> {
-    return this.set(key, JSON.stringify(value), "EX", timeExp);
+  setValue(key: string, value: any, timeExp: number): Promise<string> {
+    return this.set(key, value, "EX", timeExp);
   }
 
   delValue(key: string): Promise<number> {

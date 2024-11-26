@@ -6,6 +6,8 @@ import { AuthJwtService } from "src/jwt/auth.jwt.service";
 import { PublicModule } from "./public/public.module";
 import { PublicService } from "./public/public.service";
 import UploadFileFactoryService from "src/util/upload-service/upload-file.service";
+import { StoreRepository } from "src/repositories/store-repository";
+import RedisClient from "src/providers/redis/redis-client";
 
 @Module({
   providers: [
@@ -14,6 +16,8 @@ import UploadFileFactoryService from "src/util/upload-service/upload-file.servic
     AuthJwtService,
     PublicService,
     UploadFileFactoryService,
+    StoreRepository,
+    RedisClient
   ],
   controllers: [StoreController],
   exports: [StoreService],

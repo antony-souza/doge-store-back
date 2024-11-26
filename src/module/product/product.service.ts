@@ -47,7 +47,7 @@ export class ProductService {
     const promotionProduct = createProductDto.promotion === "true";
 
     const cacheKey = `store:${createProductDto.store_id}:products`;
-    await this.redisClient.del(cacheKey);
+    await this.redisClient.delValue(cacheKey);
 
     return await this.prismaService.product.create({
       data: {
@@ -62,14 +62,14 @@ export class ProductService {
   async findMany(dto: UpdateProductDto): Promise<ProductEntity[]> {
 
     const cacheKey = `store:${dto.store_id}:products`;
-    const cachedData = await this.redisClient.getValue(cacheKey);
+    const cacheData = await this.redisClient.getValue(cacheKey);
 
-    if (cachedData) {
-      return JSON.parse(cachedData);
+    if (cacheData) {
+      return JSON.parse(cacheData);
     }
 
     const products = await this.productRepository.findMany(dto);
-    console.log('productsDB', products);
+
     if (!products) {
       throw new NotFoundException('Products not found');
     }
@@ -81,7 +81,7 @@ export class ProductService {
 
   async findOne(dto: UpdateProductDto): Promise<ProductEntity> {
 
-    const cacheKey = `store:${dto.id,dto.store_id}:products`;
+    const cacheKey = `store:${dto.id, dto.store_id}:products`;
 
     const cachedData = await this.redisClient.getValue(cacheKey);
 
