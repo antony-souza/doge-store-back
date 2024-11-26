@@ -4,14 +4,19 @@ import { CategoryController } from "./category.controller";
 import { PrismaService } from "src/database/prisma.service";
 import { AuthJwtService } from "src/jwt/auth.jwt.service";
 import UploadFileFactoryService from "src/util/upload-service/upload-file.service";
+import { CategoryRepository } from "src/repositories/category-repository";
+import { PrismaClient } from "@prisma/client";
+import RedisClient from "src/providers/redis/redis-client";
 
 @Module({
   controllers: [CategoryController],
   providers: [
     CategoryService,
-    PrismaService,
+    PrismaClient,
     AuthJwtService,
     CategoryService,
+    RedisClient,
+    CategoryRepository,
     UploadFileFactoryService,
   ],
 })

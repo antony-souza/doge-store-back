@@ -65,7 +65,6 @@ export class ProductService {
     const cachedData = await this.redisClient.getValue(cacheKey);
 
     if (cachedData) {
-      console.log('cachedData', cachedData);
       return JSON.parse(cachedData);
     }
 
@@ -82,7 +81,7 @@ export class ProductService {
 
   async findOne(dto: UpdateProductDto): Promise<ProductEntity> {
 
-    const cacheKey = `product:${dto.id}`;
+    const cacheKey = `store:${dto.id,dto.store_id}:products`;
 
     const cachedData = await this.redisClient.getValue(cacheKey);
 
