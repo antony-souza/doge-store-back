@@ -6,7 +6,6 @@ class Environment {
   public readonly port: number = parseInt(process.env.PORT_1 ?? "");
 
   //Redis
-  // eslint-disable-next-line prettier/prettier
   public readonly redisCacheHost: string = process.env.REDIS_CACHE_HOST ?? "";
   // eslint-disable-next-line prettier/prettier
   public readonly redisCachePort: number = parseInt(process.env.REDIS_CACHE_PORT ?? "");

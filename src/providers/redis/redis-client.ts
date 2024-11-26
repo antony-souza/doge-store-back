@@ -1,9 +1,10 @@
-import { Logger } from "@nestjs/common";
+import { Injectable, Logger } from "@nestjs/common";
 import Redis from "ioredis";
 import { environment } from "src/environment/environment";
 
-export class RedisClient extends Redis {
-  private readonly logger = new Logger("REDIS");
+@Injectable()
+export default class RedisClient extends Redis {
+  private readonly logger = new Logger("RedisClient");
 
   constructor() {
     super({
@@ -14,25 +15,31 @@ export class RedisClient extends Redis {
     });
   }
 
-  getValue(key: string): Promise<string> {
-    return this.get(key);
+  async getValue(key: string): Promise<string> {
+    const value = await this.get(key);
+
+    return value ? JSON.parse(value) : null;
   }
 
-  setValue(key: string, value: string): Promise<string> {
-    return this.set(key, value, "EX", 15);
+  setValue(key: string, value: string, timeExp: number): Promise<string> {
+    return this.set(key, JSON.stringify(value), "EX", timeExp);
+  }
+
+  delValue(key: string): Promise<number> {
+    return this.del(key);
   }
 
   async testConnection(): Promise<void> {
     try {
       await this.ping();
-      this.logger.log("Redis connected successfully!", "REDIS");
+      this.logger.log("Redis connected successfully!");
     } catch (error) {
-      this.logger.error("Redis connection failed!", "REDIS");
+      this.logger.error("Redis connection failed!");
       throw error;
     }
   }
 }
 
-export const connectRedis = async (): Promise<void> => {
+export const connectRedisCache = async (): Promise<void> => {
   await new RedisClient().testConnection();
 };

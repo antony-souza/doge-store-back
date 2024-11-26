@@ -1,15 +1,21 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { CreateCategoryDto } from "./dto/create-category.dto";
 import { UpdateCategoryDto } from "./dto/update-category.dto";
-import { PrismaService } from "src/database/prisma.service";
 import UploadFileFactoryService from "src/util/upload-service/upload-file.service";
+import { CategoryRepository } from "src/repositories/category-repository";
+import { PrismaClient } from "@prisma/client";
+import RedisClient from "src/providers/redis/redis-client";
+
+
 
 @Injectable()
 export class CategoryService {
   constructor(
-    private readonly prismaService: PrismaService,
+    private readonly prismaService: PrismaClient,
+    private readonly categoryRepository: CategoryRepository,
+    private readonly redisClient: RedisClient,
     private readonly UploadFileFactoryService: UploadFileFactoryService,
-  ) {}
+  ) { }
 
   async create(createCategoryDto: CreateCategoryDto) {
     const url = await this.UploadFileFactoryService.upload(
@@ -24,45 +30,36 @@ export class CategoryService {
       },
     });
 
+    const cacheKey = `store:${createCategoryDto.store_id}:categories`;
+    await this.redisClient.del(cacheKey);
+
     return response;
   }
 
-  async findAll() {
-    return await this.prismaService.category.findMany({
-      where: {
-        enabled: true,
-      },
-    });
-  }
+  async findAllCategoryByStoreId(dto: UpdateCategoryDto) {
 
-  async findAllCategoryByStoreId(categoryDto: UpdateCategoryDto) {
-    const existingCategory = await this.prismaService.store.count({
+    const existingStore = await this.prismaService.store.count({
       where: {
-        id: categoryDto.store_id,
+        id: dto.store_id,
       },
     });
 
-    if (existingCategory === 0) {
+    if (existingStore === 0) {
       throw new NotFoundException("Store not found");
     }
 
-    return await this.prismaService.category.findMany({
-      where: {
-        store_id: categoryDto.store_id,
-        enabled: true,
-      },
-      select: {
-        id: true,
-        name: true,
-        image_url: true,
-        store: {
-          select: {
-            id: true,
-            name: true,
-          },
-        },
-      },
-    });
+    const cacheKey = `store:${dto.store_id}:categories`;
+    const cacheData = await this.redisClient.getValue(cacheKey);
+
+    if (cacheData) {
+      return JSON.stringify(cacheData);
+    }
+
+    const response = await this.categoryRepository.findMany(dto);
+
+    await this.redisClient.setValue(cacheKey, JSON.stringify(response), 60 * 2);
+
+    return response;
   }
 
   async update(updateCategoryDto: UpdateCategoryDto) {
@@ -83,6 +80,11 @@ export class CategoryService {
         updateCategoryDto.image_url,
       );
     }
+
+
+    const cacheKey = `store:${updateCategoryDto.store_id}:categories`;
+    await this.redisClient.delValue(cacheKey)
+
     return await this.prismaService.category.update({
       where: {
         id: updateCategoryDto.id,
@@ -94,11 +96,8 @@ export class CategoryService {
     });
   }
 
-  async remove(id: string) {
-    return await this.prismaService.category.delete({
-      where: {
-        id,
-      },
-    });
+  async remove(dto: UpdateCategoryDto) {
+    return await this.categoryRepository.remove(dto)
   }
 }
+

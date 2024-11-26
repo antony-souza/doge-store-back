@@ -1,13 +1,10 @@
-// import { PrismaService } from "src/database/prisma.service";
-
 import { Logger, OnModuleDestroy, OnModuleInit } from "@nestjs/common";
-import { PrismaClient, Users } from "@prisma/client";
+import { PrismaClient, Role, Users } from "@prisma/client";
 import * as bcrypt from "bcryptjs";
-
+import { environment } from "src/environment/enviroment-prod";
 export class PrismaInitialService
   extends PrismaClient
-  implements OnModuleInit, OnModuleDestroy
-{
+  implements OnModuleInit, OnModuleDestroy {
   constructor() {
     super();
   }
@@ -24,13 +21,13 @@ export class PrismaInitialService
 async function main() {
   const prismaService = new PrismaInitialService();
 
-  const userDefault: Users = {
-    name: "DogeAdmin",
-    email: "admin@duck.com",
-    role: "admin",
-    id: "1",
+  const userDefault:Users = {
+    name: environment.DEFAULT_USER_NAME,
+    email: environment.DEFAULT_USER_EMAIL,
+    role: environment.DEFAULT_USER_ROLE as Role,
+    id: "1", 
     password: "",
-    image_url: "https://i.imgur.com/9NafuhL.jpeg",
+    image_url: environment.DEFAULT_USER_IMAGE_URL,
     store_id: undefined,
     created_at: undefined,
     updated_at: undefined,
@@ -45,7 +42,7 @@ async function main() {
   });
 
   if (!checkIfExistUser) {
-    const hashedPassword = await bcrypt.hash("12345678", 11);
+    const hashedPassword = await bcrypt.hash(environment.DEFAULT_USER_PASSWORD, 11);
 
     await prismaService.users.create({
       data: {

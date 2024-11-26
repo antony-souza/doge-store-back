@@ -21,7 +21,7 @@ import { FileInterceptor } from "@nestjs/platform-express";
 @Roles("admin", "user")
 @UseGuards(JwtAuthGuard, RolesGuard)
 export class CategoryController {
-  constructor(private readonly categoryService: CategoryService) {}
+  constructor(private readonly categoryService: CategoryService) { }
 
   @Post("/create")
   @UseInterceptors(FileInterceptor("image_url"))
@@ -36,16 +36,12 @@ export class CategoryController {
     });
   }
 
-  @Get("")
-  findAll() {
-    return this.categoryService.findAll();
-  }
-
   @Get("/search/:id")
   findAllCategoryByStoreId(@Param("id") store_id: string) {
-    return this.categoryService.findAllCategoryByStoreId({
+    const dto: UpdateCategoryDto = {
       store_id: store_id,
-    });
+    }
+    return this.categoryService.findAllCategoryByStoreId(dto);
   }
 
   @Put("/update/:id")
@@ -64,6 +60,9 @@ export class CategoryController {
 
   @Delete("/delete/:id")
   remove(@Param("id") id: string) {
-    return this.categoryService.remove(id);
+    const dto: UpdateCategoryDto = {
+      id: id
+    }
+    return this.categoryService.remove(dto);
   }
 }
