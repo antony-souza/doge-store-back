@@ -41,7 +41,7 @@ export class ProductController {
   @Get("/search/:storeId")
   findAll(@Param("storeId") storeId: string) {
     const productDto: UpdateProductDto = {
-      id: storeId,
+      store_id: storeId,
     };
     return this.productService.findMany(productDto);
   }

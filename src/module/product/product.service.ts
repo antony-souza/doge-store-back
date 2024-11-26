@@ -65,15 +65,12 @@ export class ProductService {
     const cachedData = await this.redisClient.getValue(cacheKey);
 
     if (cachedData) {
-      return JSON.parse(cachedData) as ProductEntity[];
+      console.log('cachedData', cachedData);
+      return JSON.parse(cachedData);
     }
 
-    if (!dto.store_id) {
-      throw new BadRequestException('Store id is required');
-    }
-
-    const products = this.productRepository.findMany(dto);
-
+    const products = await this.productRepository.findMany(dto);
+    console.log('productsDB', products);
     if (!products) {
       throw new NotFoundException('Products not found');
     }

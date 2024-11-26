@@ -13,10 +13,10 @@ export default class ProductRepository {
   ) { }
 
   async findMany(dto: UpdateProductDto): Promise<ProductEntity[]> {
-
+    
     return await this.prisma.product.findMany({
       where: {
-        store_id: dto.id,
+        store_id: dto.store_id,
         enabled: true,
       },
       select: {
@@ -38,7 +38,6 @@ export default class ProductRepository {
   }
 
   async findOne(dto: UpdateProductDto): Promise<ProductEntity> {
-    ;
 
     return await this.prisma.product.findUnique({
       where: {
